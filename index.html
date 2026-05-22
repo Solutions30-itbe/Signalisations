@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scanner Signalisation ACN</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2Nhbm5lciBTaGFyZVBvaW50IiwgInNob3J0X25hbWUiOiJTY2FubmVyIiwgImRpc3BsYXkiOiJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiIjMEYxNzJBIiwgInRoZW1lX2NvbG9yIjoiIzBGMTcyQSJ9">
+    
+    <!-- Bibliothèque html5-qrcode pour le scan -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+        
+        :root {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-card: #334155;
+            --accent: #10B981;
+            --accent-hover: #059669;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #475569;
+            --error: #EF4444;
+            --warning: #F59E0B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Effet de grille en arrière-plan */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 1;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 0;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, #34D399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        /* Card principale */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Zone de scan */
+        #reader {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 20px;
+        }
+        
+        #reader video {
+            border-radius: 10px;
+        }
+        
+        /* Boutons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            margin-top: 12px;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #DC2626;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Sélection du type d'opération */
+        .operation-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .operation-type-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .operation-type-btn:hover {
+            background: var(--border);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+        }
+        
+        .operation-type-btn:active {
+            transform: translateY(-2px);
+        }
+        
+        .operation-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+        
+        .operation-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .btn-link {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        /* Zone de message */
+        .message-zone {
+            margin-top: 20px;
+        }
+        
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .message-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .message-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+        
+        .message-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+        
+        /* Résultat du scan */
+        .scan-result {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            animation: pulse 0.5s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+        
+        .scan-result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .scan-result-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            word-break: break-all;
+        }
+        
+        /* Status indicator */
+        .status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-ready {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        .status-scanning {
+            background: var(--warning);
+            box-shadow: 0 0 10px var(--warning);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* NOUVEAUX STYLES - File d'attente */
+        .queue-section {
+            margin-top: 20px;
+        }
+        
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .queue-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .queue-count {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .queue-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .queue-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .queue-item-barcode {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            word-break: break-all;
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        .queue-item-remove {
+            background: var(--error);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .queue-item-remove:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+        
+        .queue-item-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .queue-item-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .queue-item-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .queue-item-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .queue-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .queue-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .operation-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .queue-item-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Scanner Signalisation ACN</h1>
+            <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
+        </header>
+        
+        <!-- Sélection du type d'opération -->
+        <div class="card" id="operationTypeSection">
+            <h2 style="font-family: 'Space Mono', monospace; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; text-align: center;">
+                Type d'opération
+            </h2>
+            
+            <div class="operation-type-grid">
+                <button class="operation-type-btn" data-type="fourniture">
+                    <div class="operation-icon">📦</div>
+                    <div class="operation-label">Fourniture technicien</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="placement">
+                    <div class="operation-icon">🏗️</div>
+                    <div class="operation-label">Placement chantier</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="reprise">
+                    <div class="operation-icon">🔄</div>
+                    <div class="operation-label">Reprise chantier</div>
+                </button>
+                
+                <button class="operation-type-btn" data-type="retour">
+                    <div class="operation-icon">⬅️</div>
+                    <div class="operation-label">Retour stock</div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Formulaire de session (caché par défaut) -->
+        <div class="card" id="sessionFormSection" style="display: none;">
+            <!-- Affichage du type d'opération sélectionné -->
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <span style="color: var(--text-secondary); font-size: 0.85rem;">Type d'opération :</span>
+                <strong id="selectedOperationType" style="color: var(--accent); font-family: 'Space Mono', monospace; margin-left: 8px;"></strong>
+                <button id="changeOperationBtn" class="btn-link" style="margin-left: 12px; color: var(--accent); background: none; border: none; cursor: pointer; text-decoration: underline; font-size: 0.85rem;">Changer</button>
+            </div>
+            
+            <!-- Champ PER ID (toujours visible) -->
+            <div class="form-group">
+                <label for="peridInput">PER ID (Technicien)</label>
+                <input type="text" id="peridInput" placeholder="Ex: 12345" required>
+            </div>
+            
+            <!-- Champ PIT ID (visible pour placement et reprise) -->
+            <div class="form-group" id="pitidGroup" style="display: none;">
+                <label for="pitidInput">PIT ID (Projet)</label>
+                <input type="text" id="pitidInput" placeholder="Ex: PIT-2024-001">
+            </div>
+            
+            <!-- Champ Adresse (visible seulement pour reprise) -->
+            <div class="form-group" id="addressGroup" style="display: none;">
+                <label for="addressInput">Adresse de récupération</label>
+                <textarea id="addressInput" placeholder="Adresse où le matériel a été récupéré..." rows="2"></textarea>
+            </div>
+            
+            <!-- Champ Commentaires (optionnel, toujours visible) -->
+            <div class="form-group">
+                <label for="initialCommentsInput">Commentaires initiaux (optionnel)</label>
+                <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour cette session..."></textarea>
+            </div>
+            
+            <button id="startScanningBtn" class="btn btn-primary">
+                ✓ Valider et commencer
+            </button>
+        </div>
+        
+        <!-- Section de scan (cachée au début) -->
+        <div class="card" id="scanningSection" style="display: none;">
+            <!-- Bouton de réinitialisation -->
+            <div style="text-align: center; margin-bottom: 16px;">
+                <button id="resetBtn" class="btn btn-secondary" style="max-width: 300px;">
+                    🔄 Recommencer (nouvelle opération)
+                </button>
+            </div>
+            
+            <!-- Zone de scan -->
+            <div id="reader"></div>
+            
+            <button id="scanBtn" class="btn btn-primary">
+                <span class="status status-ready"></span>
+                Démarrer le scan
+            </button>
+            
+            <button id="stopBtn" class="btn btn-danger" style="display: none;">
+                <span class="status status-scanning"></span>
+                Arrêter le scan
+            </button>
+            
+            <!-- Résultat du scan actuel -->
+            <div id="scanResultZone"></div>
+            
+            <!-- Formulaire pour l'article scanné -->
+            <div id="formSection" style="display: none;">
+                <div class="form-group">
+                    <label for="barcodeInput">Code-barres</label>
+                    <input type="text" id="barcodeInput" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantityInput">Quantité</label>
+                    <input type="number" id="quantityInput" value="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notesInput">Notes (optionnel)</label>
+                    <textarea id="notesInput" placeholder="Ajoutez des commentaires..."></textarea>
+                </div>
+                
+                <button id="addToQueueBtn" class="btn btn-primary">
+                    ➕ Ajouter à la liste
+                </button>
+                
+                <button id="cancelBtn" class="btn btn-secondary">
+                    Annuler
+                </button>
+            </div>
+        </div>
+        
+        <!-- File d'attente des articles -->
+        <div class="card queue-section" id="queueSection" style="display: none;">
+            <div class="queue-header">
+                <div class="queue-title">📋 Articles scannés</div>
+                <div class="queue-count" id="queueCount">0</div>
+            </div>
+            
+            <div class="queue-list" id="queueList"></div>
+            
+            <div class="queue-actions">
+                <button id="sendAllBtn" class="btn btn-primary">
+                    🚀 Tout envoyer et clôturer
+                </button>
+                <button id="clearQueueBtn" class="btn btn-secondary">
+                    🗑️ Vider la liste
+                </button>
+            </div>
+            
+            <button id="testConnectionBtn" class="btn btn-secondary" style="margin-top: 12px; font-size: 0.85rem;">
+                🔌 Tester la connexion Power Automate
+            </button>
+        </div>
+        
+        <!-- Zone de message -->
+        <div class="message-zone" id="messageZone"></div>
+    </div>
+    
+    <script>
+        // ⚙️ CONFIGURATION - URL du webhook Power Automate
+        const WEBHOOK_URL = 'https://default2fe73b7aa63e4370a1eb1915e8da07.55.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b212eb456463411797b5b5f5f9edf53e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-oLm1krIbljNiqXPqTH-9e-h7tYzXmlEv2ChX0-Hhd4';
+        
+        // Variables globales
+        let html5QrCode;
+        let isScanning = false;
+        let scannedBarcode = '';
+        let itemQueue = []; // File d'attente des articles
+        let operationType = ''; // Type d'opération sélectionné
+        
+        // Éléments du DOM - Sélection d'opération
+        const operationTypeSection = document.getElementById('operationTypeSection');
+        const sessionFormSection = document.getElementById('sessionFormSection');
+        const scanningSection = document.getElementById('scanningSection');
+        const operationTypeBtns = document.querySelectorAll('.operation-type-btn');
+        const selectedOperationType = document.getElementById('selectedOperationType');
+        const changeOperationBtn = document.getElementById('changeOperationBtn');
+        const startScanningBtn = document.getElementById('startScanningBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Éléments du DOM - Formulaire
+        const peridInput = document.getElementById('peridInput');
+        const pitidInput = document.getElementById('pitidInput');
+        const addressInput = document.getElementById('addressInput');
+        const initialCommentsInput = document.getElementById('initialCommentsInput');
+        const pitidGroup = document.getElementById('pitidGroup');
+        const addressGroup = document.getElementById('addressGroup');
+        
+        // Éléments du DOM - Scan
+        const scanBtn = document.getElementById('scanBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const scanResultZone = document.getElementById('scanResultZone');
+        const formSection = document.getElementById('formSection');
+        const barcodeInput = document.getElementById('barcodeInput');
+        const quantityInput = document.getElementById('quantityInput');
+        const notesInput = document.getElementById('notesInput');
+        const addToQueueBtn = document.getElementById('addToQueueBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const messageZone = document.getElementById('messageZone');
+        
+        // Éléments du DOM - File d'attente
+        const queueSection = document.getElementById('queueSection');
+        const queueList = document.getElementById('queueList');
+        const queueCount = document.getElementById('queueCount');
+        const sendAllBtn = document.getElementById('sendAllBtn');
+        const clearQueueBtn = document.getElementById('clearQueueBtn');
+        const testConnectionBtn = document.getElementById('testConnectionBtn');
+        
+        // ===== GESTION DU TYPE D'OPÉRATION =====
+        
+        // Configuration des champs selon le type d'opération
+        const operationConfig = {
+            fourniture: {
+                label: 'Fourniture technicien',
+                fields: ['perid']
+            },
+            placement: {
+                label: 'Placement chantier',
+                fields: ['perid', 'pitid']
+            },
+            reprise: {
+                label: 'Reprise chantier',
+                fields: ['perid', 'pitid', 'address']
+            },
+            retour: {
+                label: 'Retour stock',
+                fields: ['perid']
+            }
+        };
+        
+        // Sélection du type d'opération
+        operationTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                selectOperationType(type);
+            });
+        });
+        
+        function selectOperationType(type) {
+            operationType = type;
+            const config = operationConfig[type];
+            
+            // Afficher le formulaire de session
+            operationTypeSection.style.display = 'none';
+            sessionFormSection.style.display = 'block';
+            
+            // Mettre à jour le label
+            selectedOperationType.textContent = config.label;
+            
+            // Afficher/masquer les champs selon le type
+            pitidGroup.style.display = config.fields.includes('pitid') ? 'block' : 'none';
+            addressGroup.style.display = config.fields.includes('address') ? 'block' : 'none';
+            
+            // Réinitialiser les champs non nécessaires
+            if (!config.fields.includes('pitid')) pitidInput.value = '';
+            if (!config.fields.includes('address')) addressInput.value = '';
+            
+            // Sauvegarder le type
+            localStorage.setItem('operationType', type);
+        }
+        
+        // Changer de type d'opération
+        changeOperationBtn.addEventListener('click', () => {
+            sessionFormSection.style.display = 'none';
+            operationTypeSection.style.display = 'block';
+            operationType = '';
+        });
+        
+        // Valider et commencer le scan
+        startScanningBtn.addEventListener('click', () => {
+            const config = operationConfig[operationType];
+            
+            // Validation des champs obligatoires
+            if (!peridInput.value.trim()) {
+                showMessage('Veuillez remplir le PER ID', 'error');
+                peridInput.focus();
+                return;
+            }
+            
+            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
+                showMessage('Veuillez remplir le PIT ID', 'error');
+                pitidInput.focus();
+                return;
+            }
+            
+            if (config.fields.includes('address') && !addressInput.value.trim()) {
+                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
+                addressInput.focus();
+                return;
+            }
+            
+            // Sauvegarder les données
+            saveSessionData();
+            
+            // Afficher la section de scan
+            sessionFormSection.style.display = 'none';
+            scanningSection.style.display = 'block';
+            
+            showMessage('✓ Configuration validée. Vous pouvez commencer à scanner.', 'success');
+        });
+        
+        // ===== FIN GESTION DU TYPE D'OPÉRATION =====
+        
+        // Charger les données sauvegardées
+        function loadConfig() {
+            // Charger les valeurs de session depuis localStorage
+            const savedPerid = localStorage.getItem('perid') || '';
+            const savedPitid = localStorage.getItem('pitid') || '';
+            const savedAddress = localStorage.getItem('address') || '';
+            const savedComments = localStorage.getItem('initialComments') || '';
+            const savedOperationType = localStorage.getItem('operationType') || '';
+            
+            peridInput.value = savedPerid;
+            pitidInput.value = savedPitid;
+            addressInput.value = savedAddress;
+            initialCommentsInput.value = savedComments;
+            
+            // Si un type d'opération était sauvegardé, le restaurer
+            if (savedOperationType && operationConfig[savedOperationType]) {
+                selectOperationType(savedOperationType);
+                
+                // Si tous les champs obligatoires sont remplis, aller directement au scan
+                const config = operationConfig[savedOperationType];
+                const hasAllRequired = savedPerid && 
+                    (!config.fields.includes('pitid') || savedPitid) &&
+                    (!config.fields.includes('address') || savedAddress);
+                
+                if (hasAllRequired) {
+                    sessionFormSection.style.display = 'none';
+                    scanningSection.style.display = 'block';
+                }
+            }
+            
+            // Charger la file d'attente depuis localStorage
+            const savedQueue = localStorage.getItem('itemQueue');
+            if (savedQueue) {
+                try {
+                    itemQueue = JSON.parse(savedQueue);
+                    updateQueueDisplay();
+                } catch (e) {
+                    console.error('Erreur lors du chargement de la file d\'attente:', e);
+                }
+            }
+        }
+        
+        // Sauvegarder les données de session
+        function saveSessionData() {
+            localStorage.setItem('perid', peridInput.value);
+            localStorage.setItem('pitid', pitidInput.value);
+            localStorage.setItem('address', addressInput.value);
+            localStorage.setItem('initialComments', initialCommentsInput.value);
+            localStorage.setItem('operationType', operationType);
+        }
+        
+        // Sauvegarder automatiquement quand on change les champs
+        peridInput.addEventListener('change', saveSessionData);
+        pitidInput.addEventListener('change', saveSessionData);
+        addressInput.addEventListener('change', saveSessionData);
+        initialCommentsInput.addEventListener('change', saveSessionData);
+        
+        // ===== RÉINITIALISATION =====
+        
+        resetBtn.addEventListener('click', async () => {
+            // Demander confirmation si des articles sont en attente
+            if (itemQueue.length > 0) {
+                const confirm = window.confirm(
+                    `⚠️ Attention !\n\n` +
+                    `Vous avez ${itemQueue.length} article(s) en attente qui n'ont pas été envoyés.\n\n` +
+                    `Voulez-vous vraiment recommencer et perdre ces données ?`
+                );
+                
+                if (!confirm) {
+                    return;
+                }
+            }
+            
+            // Arrêter le scan si en cours
+            await stopScanning();
+            
+            // Réinitialiser la file d'attente
+            itemQueue = [];
+            saveQueue();
+            updateQueueDisplay();
+            
+            // Réinitialiser les champs de formulaire
+            peridInput.value = '';
+            pitidInput.value = '';
+            addressInput.value = '';
+            initialCommentsInput.value = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            
+            // Réinitialiser les variables
+            operationType = '';
+            scannedBarcode = '';
+            
+            // Nettoyer localStorage
+            localStorage.removeItem('operationType');
+            localStorage.removeItem('perid');
+            localStorage.removeItem('pitid');
+            localStorage.removeItem('address');
+            localStorage.removeItem('initialComments');
+            localStorage.removeItem('itemQueue');
+            
+            // Masquer toutes les sections
+            sessionFormSection.style.display = 'none';
+            scanningSection.style.display = 'none';
+            formSection.style.display = 'none';
+            scanResultZone.innerHTML = '';
+            
+            // Afficher l'écran de sélection
+            operationTypeSection.style.display = 'block';
+            
+            showMessage('✓ Réinitialisation effectuée. Sélectionnez un type d\'opération.', 'success');
+        });
+        
+        // ===== FIN RÉINITIALISATION =====
+        
+        // Afficher un message
+        function showMessage(text, type = 'success') {
+            const messageClass = `message-${type}`;
+            messageZone.innerHTML = `
+                <div class="message ${messageClass}">
+                    ${text}
+                </div>
+            `;
+            
+            // Auto-effacement après 5 secondes pour les succès
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageZone.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        // Démarrer le scan
+        scanBtn.addEventListener('click', async () => {
+            try {
+                html5QrCode = new Html5Qrcode("reader");
+                
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.UPC_E
+                    ]
+                };
+                
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanError
+                );
+                
+                isScanning = true;
+                scanBtn.style.display = 'none';
+                stopBtn.style.display = 'block';
+                
+                // Changer le status
+                const statusDot = scanBtn.querySelector('.status');
+                statusDot.classList.remove('status-ready');
+                statusDot.classList.add('status-scanning');
+                
+                showMessage('Scanner activé. Positionnez le code-barres devant la caméra.', 'success');
+                
+            } catch (err) {
+                console.error('Erreur de démarrage:', err);
+                showMessage('Impossible d\'accéder à la caméra. Vérifiez les permissions.', 'error');
+            }
+        });
+        
+        // Arrêter le scan
+        stopBtn.addEventListener('click', async () => {
+            await stopScanning();
+        });
+        
+        async function stopScanning() {
+            if (html5QrCode && isScanning) {
+                await html5QrCode.stop();
+                isScanning = false;
+                scanBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                
+                // Réinitialiser le status
+                const statusDot = scanBtn.querySelector('.status');
+                statusDot.classList.remove('status-scanning');
+                statusDot.classList.add('status-ready');
+            }
+        }
+        
+        // Callback de succès du scan
+        async function onScanSuccess(decodedText, decodedResult) {
+            if (scannedBarcode === decodedText) {
+                return; // Éviter les scans multiples du même code
+            }
+            
+            scannedBarcode = decodedText;
+            
+            // Vibration haptique si disponible
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+            
+            // NE PAS arrêter le scan - on continue pour scanner le suivant
+            
+            // Afficher le résultat
+            scanResultZone.innerHTML = `
+                <div class="scan-result">
+                    <div class="scan-result-label">Code scanné</div>
+                    <div class="scan-result-value">${decodedText}</div>
+                </div>
+            `;
+            
+            // Remplir le formulaire
+            barcodeInput.value = decodedText;
+            quantityInput.value = '1';
+            notesInput.value = '';
+            
+            // Afficher le formulaire
+            formSection.style.display = 'block';
+            
+            showMessage('✓ Code-barres scanné! Ajoutez-le à la liste ou scannez le suivant.', 'success');
+        }
+        
+        // Callback d'erreur du scan
+        function onScanError(errorMessage) {
+            // Ignorer les erreurs de scan normales
+        }
+        
+        // Ajouter à la file d'attente
+        addToQueueBtn.addEventListener('click', () => {
+            if (!barcodeInput.value) {
+                showMessage('Aucun code-barres détecté', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                barcode: barcodeInput.value,
+                quantity: parseInt(quantityInput.value) || 1,
+                notes: notesInput.value || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            itemQueue.push(item);
+            saveQueue();
+            updateQueueDisplay();
+            
+            // Réinitialiser le formulaire mais garder le scan actif
+            scannedBarcode = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            scanResultZone.innerHTML = '';
+            formSection.style.display = 'none';
+            
+            showMessage(`✓ Article ajouté! Total: ${itemQueue.length} article(s)`, 'success');
+        });
+        
+        // Annuler l'ajout
+        cancelBtn.addEventListener('click', () => {
+            scannedBarcode = '';
+            barcodeInput.value = '';
+            quantityInput.value = '1';
+            notesInput.value = '';
+            scanResultZone.innerHTML = '';
+            formSection.style.display = 'none';
+        });
+        
+        // Sauvegarder la file d'attente
+        function saveQueue() {
+            localStorage.setItem('itemQueue', JSON.stringify(itemQueue));
+        }
+        
+        // Mettre à jour l'affichage de la file d'attente
+        function updateQueueDisplay() {
+            queueCount.textContent = itemQueue.length;
+            
+            if (itemQueue.length === 0) {
+                queueSection.style.display = 'none';
+                queueList.innerHTML = '<div class="queue-empty">Aucun article dans la liste</div>';
+                return;
+            }
+            
+            queueSection.style.display = 'block';
+            
+            queueList.innerHTML = itemQueue.map(item => `
+                <div class="queue-item">
+                    <div class="queue-item-header">
+                        <div class="queue-item-barcode">${item.barcode}</div>
+                        <button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>
+                    </div>
+                    <div class="queue-item-details">
+                        <div class="queue-item-detail">
+                            <div class="queue-item-label">Quantité</div>
+                            <div class="queue-item-value">${item.quantity}</div>
+                        </div>
+                        <div class="queue-item-detail">
+                            <div class="queue-item-label">Horodatage</div>
+                            <div class="queue-item-value">${new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div>
+                        </div>
+                        ${item.notes ? `
+                        <div class="queue-item-detail" style="grid-column: 1 / -1;">
+                            <div class="queue-item-label">Notes</div>
+                            <div class="queue-item-value">${item.notes}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Supprimer un article de la file d'attente
+        window.removeFromQueue = function(id) {
+            itemQueue = itemQueue.filter(item => item.id !== id);
+            saveQueue();
+            updateQueueDisplay();
+            showMessage('Article supprimé de la liste', 'success');
+        };
+        
+        // Vider la file d'attente
+        clearQueueBtn.addEventListener('click', () => {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer les ${itemQueue.length} article(s) ?`)) {
+                itemQueue = [];
+                saveQueue();
+                updateQueueDisplay();
+                showMessage('Liste vidée', 'success');
+            }
+        });
+        
+        // Envoyer tous les articles vers SharePoint
+        sendAllBtn.addEventListener('click', async () => {
+            // Vérifier que les champs obligatoires sont remplis
+            if (!peridInput.value.trim()) {
+                showMessage('Veuillez remplir le PER ID', 'error');
+                return;
+            }
+            
+            const config = operationConfig[operationType];
+            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
+                showMessage('Veuillez remplir le PIT ID', 'error');
+                return;
+            }
+            
+            if (config.fields.includes('address') && !addressInput.value.trim()) {
+                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
+                return;
+            }
+            
+            if (itemQueue.length === 0) {
+                showMessage('Aucun article à envoyer', 'error');
+                return;
+            }
+            
+            // Désactiver le bouton pendant l'envoi
+            sendAllBtn.disabled = true;
+            sendAllBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
+            
+            const batchData = {
+                // Type d'opération
+                operationType: operationType,
+                operationLabel: config.label,
+                
+                // Informations de session (toujours des strings, jamais null)
+                perid: peridInput.value.trim(),
+                pitid: pitidInput.value.trim() || "",
+                address: addressInput.value.trim() || "",
+                initialComments: initialCommentsInput.value.trim() || "",
+                
+                // Données des scans
+                items: itemQueue.map(item => ({
+                    barcode: item.barcode,
+                    quantity: parseInt(item.quantity), // Forcer en integer
+                    notes: item.notes || "",
+                    timestamp: item.timestamp
+                })),
+                
+                // Métadonnées
+                totalItems: parseInt(itemQueue.length),
+                batchTimestamp: new Date().toISOString(),
+                scannedBy: `Technicien ${peridInput.value.trim()}`
+            };
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(batchData)
+                });
+                
+                // Lire la réponse une seule fois
+                const contentType = response.headers.get('content-type');
+                let responseData;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    responseData = await response.text();
+                }
+                
+                if (response.ok) {
+                    showMessage(`✓ ${itemQueue.length} article(s) envoyé(s) vers SharePoint avec succès!`, 'success');
+                    
+                    // Vider la file d'attente après envoi réussi
+                    itemQueue = [];
+                    saveQueue();
+                    updateQueueDisplay();
+                    
+                    // Réactiver le bouton
+                    sendAllBtn.disabled = false;
+                    sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
+                } else {
+                    // Afficher l'erreur détaillée
+                    const errorMsg = typeof responseData === 'object' && responseData.error ? 
+                        `${responseData.error.code}: ${responseData.error.message}` : 
+                        responseData;
+                    throw new Error(`Erreur HTTP ${response.status}: ${errorMsg}`);
+                }
+                
+            } catch (error) {
+                console.error('Erreur d\'envoi complète:', error);
+                
+                // Message d'erreur détaillé
+                let errorMessage = 'Erreur lors de l\'envoi.\n\n';
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMessage += '❌ Erreur CORS détectée.\n\n';
+                    errorMessage += 'Solutions possibles:\n';
+                    errorMessage += '1. Vérifiez que le workflow Power Automate est activé\n';
+                    errorMessage += '2. Vérifiez que l\'authentification est sur "N\'importe qui"\n';
+                    errorMessage += '3. Essayez de désactiver/réactiver le workflow\n\n';
+                    errorMessage += 'Détails technique: ' + error.message;
+                } else {
+                    errorMessage += '📄 Détails: ' + error.message;
+                }
+                
+                showMessage(errorMessage, 'error');
+                sendAllBtn.disabled = false;
+                sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
+            }
+        });
+        
+        // Tester la connexion Power Automate
+        testConnectionBtn.addEventListener('click', async () => {
+            testConnectionBtn.disabled = true;
+            testConnectionBtn.innerHTML = '<span class="spinner"></span>Test en cours...';
+            
+            const testData = {
+                operationType: "test",
+                operationLabel: "Test de connexion",
+                perid: "TEST",
+                pitid: "",
+                address: "",
+                initialComments: "Ceci est un test de connexion",
+                items: [
+                    {
+                        barcode: "TEST123",
+                        quantity: 1,
+                        notes: "Article de test",
+                        timestamp: new Date().toISOString()
+                    }
+                ],
+                totalItems: 1,
+                batchTimestamp: new Date().toISOString(),
+                scannedBy: "Test"
+            };
+            
+            try {
+                console.log('Envoi de la requête de test...');
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                console.log('Réponse reçue:', response.status, response.statusText);
+                
+                // Lire la réponse une seule fois
+                const contentType = response.headers.get('content-type');
+                let responseData;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    responseData = await response.text();
+                }
+                
+                console.log('Données de réponse:', responseData);
+                
+                if (response.ok) {
+                    showMessage('✅ Test réussi ! La connexion à Power Automate fonctionne.', 'success');
+                } else {
+                    const errorMsg = typeof responseData === 'object' && responseData.error ? 
+                        `${responseData.error.code}: ${responseData.error.message}` : 
+                        responseData;
+                    showMessage(`❌ Test échoué (${response.status}): ${errorMsg}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erreur complète:', error);
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    showMessage(
+                        '❌ Erreur CORS détectée.\n\n' +
+                        'Le navigateur bloque la requête. Vérifiez que:\n' +
+                        '1. Le workflow est activé\n' +
+                        '2. L\'authentification est sur "N\'importe qui"\n' +
+                        '3. L\'URL est correcte\n\n' +
+                        'Consultez la console (F12) pour plus de détails.',
+                        'error'
+                    );
+                } else {
+                    showMessage(`❌ Erreur: ${error.message}`, 'error');
+                }
+            } finally {
+                testConnectionBtn.disabled = false;
+                testConnectionBtn.innerHTML = '🔌 Tester la connexion Power Automate';
+            }
+        });
+        
+        // Initialisation
+        loadConfig();
+        
+        // PWA: Installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+    </script>
+</body>
+</html>

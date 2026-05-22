@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scanner Signalisation ACN</title>
+    <title>Scanner la signalisation</title>
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0F172A">
@@ -561,8 +561,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Scanner Signalisation ACN</h1>
-            <p class="subtitle">Scannez plusieurs articles puis envoyez-les tous en une fois</p>
+            <h1>📦 Scanner la signalisation</h1>
+            <p class="subtitle">Scannez les articles puis envoyez-les tous en une fois</p>
         </header>
         
         <!-- Sélection du type d'opération -->
@@ -606,13 +606,13 @@
             <!-- Champ PER ID (toujours visible) -->
             <div class="form-group">
                 <label for="peridInput">PER ID (Technicien)</label>
-                <input type="text" id="peridInput" placeholder="Ex: 12345" required>
+                <input type="text" id="peridInput" placeholder="Ex: xxxxxx" required>
             </div>
             
             <!-- Champ PIT ID (visible pour placement et reprise) -->
             <div class="form-group" id="pitidGroup" style="display: none;">
                 <label for="pitidInput">PIT ID (Projet)</label>
-                <input type="text" id="pitidInput" placeholder="Ex: PIT-2024-001">
+                <input type="text" id="pitidInput" placeholder="Ex: xxxxxxx">
             </div>
             
             <!-- Champ Adresse (visible seulement pour reprise) -->
@@ -624,7 +624,7 @@
             <!-- Champ Commentaires (optionnel, toujours visible) -->
             <div class="form-group">
                 <label for="initialCommentsInput">Commentaires initiaux (optionnel)</label>
-                <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour cette session..."></textarea>
+                <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour ce mouvement..."></textarea>
             </div>
             
             <button id="startScanningBtn" class="btn btn-primary">
@@ -666,7 +666,7 @@
                 
                 <div class="form-group">
                     <label for="quantityInput">Quantité</label>
-                    <input type="number" id="quantityInput" value="1" min="1">
+                    <input type="number" id="quantityInput" value="1" min="1" readonly style="background: var(--bg-card); cursor: not-allowed;">
                 </div>
                 
                 <div class="form-group">

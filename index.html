@@ -615,10 +615,10 @@
                 <input type="text" id="pitidInput" placeholder="Ex: xxxxxxx">
             </div>
             
-            <!-- Champ Adresse (visible seulement pour reprise) -->
+            <!-- Champ Adresse (visible pour placement et reprise) -->
             <div class="form-group" id="addressGroup" style="display: none;">
-                <label for="addressInput">Adresse de récupération</label>
-                <textarea id="addressInput" placeholder="Adresse où le matériel a été récupéré..." rows="2"></textarea>
+                <label for="addressInput" id="addressLabel">Adresse</label>
+                <textarea id="addressInput" placeholder="Adresse du chantier..." rows="2"></textarea>
             </div>
             
             <!-- Champ Commentaires (optionnel, toujours visible) -->
@@ -736,6 +736,7 @@
         const peridInput = document.getElementById('peridInput');
         const pitidInput = document.getElementById('pitidInput');
         const addressInput = document.getElementById('addressInput');
+        const addressLabel = document.getElementById('addressLabel');
         const initialCommentsInput = document.getElementById('initialCommentsInput');
         const pitidGroup = document.getElementById('pitidGroup');
         const addressGroup = document.getElementById('addressGroup');
@@ -770,7 +771,7 @@
             },
             placement: {
                 label: 'Placement chantier',
-                fields: ['perid', 'pitid']
+                fields: ['perid', 'pitid', 'address']
             },
             reprise: {
                 label: 'Reprise chantier',
@@ -805,6 +806,17 @@
             pitidGroup.style.display = config.fields.includes('pitid') ? 'block' : 'none';
             addressGroup.style.display = config.fields.includes('address') ? 'block' : 'none';
             
+            // Adapter le label de l'adresse selon le type
+            if (config.fields.includes('address')) {
+                if (type === 'reprise') {
+                    addressLabel.textContent = 'Adresse de récupération';
+                    addressInput.placeholder = 'Adresse où le matériel a été récupéré...';
+                } else if (type === 'placement') {
+                    addressLabel.textContent = 'Adresse du chantier';
+                    addressInput.placeholder = 'Adresse du chantier...';
+                }
+            }
+            
             // Réinitialiser les champs non nécessaires
             if (!config.fields.includes('pitid')) pitidInput.value = '';
             if (!config.fields.includes('address')) addressInput.value = '';
@@ -838,7 +850,8 @@
             }
             
             if (config.fields.includes('address') && !addressInput.value.trim()) {
-                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
+                const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
+                showMessage(`Veuillez remplir ${addressType}`, 'error');
                 addressInput.focus();
                 return;
             }
@@ -857,33 +870,16 @@
         
         // Charger les données sauvegardées
         function loadConfig() {
-            // Charger les valeurs de session depuis localStorage
+            // Charger les valeurs de session depuis localStorage (pour pré-remplir)
             const savedPerid = localStorage.getItem('perid') || '';
             const savedPitid = localStorage.getItem('pitid') || '';
             const savedAddress = localStorage.getItem('address') || '';
             const savedComments = localStorage.getItem('initialComments') || '';
-            const savedOperationType = localStorage.getItem('operationType') || '';
             
             peridInput.value = savedPerid;
             pitidInput.value = savedPitid;
             addressInput.value = savedAddress;
             initialCommentsInput.value = savedComments;
-            
-            // Si un type d'opération était sauvegardé, le restaurer
-            if (savedOperationType && operationConfig[savedOperationType]) {
-                selectOperationType(savedOperationType);
-                
-                // Si tous les champs obligatoires sont remplis, aller directement au scan
-                const config = operationConfig[savedOperationType];
-                const hasAllRequired = savedPerid && 
-                    (!config.fields.includes('pitid') || savedPitid) &&
-                    (!config.fields.includes('address') || savedAddress);
-                
-                if (hasAllRequired) {
-                    sessionFormSection.style.display = 'none';
-                    scanningSection.style.display = 'block';
-                }
-            }
             
             // Charger la file d'attente depuis localStorage
             const savedQueue = localStorage.getItem('itemQueue');
@@ -895,6 +891,11 @@
                     console.error('Erreur lors du chargement de la file d\'attente:', e);
                 }
             }
+            
+            // TOUJOURS démarrer sur la page de garde
+            operationTypeSection.style.display = 'block';
+            sessionFormSection.style.display = 'none';
+            scanningSection.style.display = 'none';
         }
         
         // Sauvegarder les données de session
@@ -1206,7 +1207,8 @@
             }
             
             if (config.fields.includes('address') && !addressInput.value.trim()) {
-                showMessage('Veuillez remplir l\'adresse de récupération', 'error');
+                const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
+                showMessage(`Veuillez remplir ${addressType}`, 'error');
                 return;
             }
             

@@ -647,9 +647,9 @@
                           placeholder="Adresse du chantier..." 
                           rows="2"
                           required
-                          minlength="5"></textarea>
+                          minlength="10"></textarea>
                 <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 4px;">
-                    Obligatoire • Minimum 5 caractères
+                    Obligatoire • Minimum 10 caractères
                 </small>
             </div>
             
@@ -1003,7 +1003,7 @@
         // Valider l'adresse (minimum 10 caractères)
         function validateAddress(value) {
             if (!value || value.trim().length < 10) {
-                return { valid: false, message: 'L\'adresse doit contenir au moins 5 caractères' };
+                return { valid: false, message: 'L\'adresse doit contenir au moins 10 caractères' };
             }
             
             return { valid: true, message: '' };
@@ -1110,7 +1110,7 @@
         addressInput.addEventListener('input', (e) => {
             const value = e.target.value.trim();
             
-            if (value.length >= 5) {
+            if (value.length >= 10) {
                 e.target.style.borderColor = 'var(--accent)';
             } else if (value.length > 0) {
                 e.target.style.borderColor = 'var(--warning)';

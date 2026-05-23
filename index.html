@@ -613,14 +613,31 @@
             
             <!-- Champ PER ID (toujours visible) -->
             <div class="form-group">
-                <label for="peridInput">PER ID (Technicien)</label>
-                <input type="text" id="peridInput" placeholder="Ex: xxxxxx" required>
+                <label for="peridInput">PER ID (Technicien) - 6 chiffres</label>
+                <input type="text" 
+                       id="peridInput" 
+                       placeholder="Ex: 835967" 
+                       pattern="[0-9]{6}" 
+                       maxlength="6"
+                       inputmode="numeric"
+                       required>
+                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 4px;">
+                    6 chiffres • Pas de répétitions (111111, 222222...) sauf 888888 et 666666 • Pas de séquences (123456)
+                </small>
             </div>
             
             <!-- Champ PIT ID (visible pour placement et reprise) -->
             <div class="form-group" id="pitidGroup" style="display: none;">
-                <label for="pitidInput">PIT ID (Projet)</label>
-                <input type="text" id="pitidInput" placeholder="Ex: xxxxxxx">
+                <label for="pitidInput">PIT ID (Projet) - 7 chiffres</label>
+                <input type="text" 
+                       id="pitidInput" 
+                       placeholder="Ex: 1234567"
+                       pattern="[0-9]{7}"
+                       maxlength="7"
+                       inputmode="numeric">
+                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 4px;">
+                    7 chiffres • Pas de répétitions (1111111, 2222222...) • Pas de séquences (1234567)
+                </small>
             </div>
             
             <!-- Champ Adresse (visible pour placement et reprise) -->
@@ -844,22 +861,34 @@
         startScanningBtn.addEventListener('click', () => {
             const config = operationConfig[operationType];
             
-            // Validation des champs obligatoires
-            if (!peridInput.value.trim()) {
-                showMessage('Veuillez remplir le PER ID', 'error');
+            // Validation du PER ID
+            const peridValue = peridInput.value.trim();
+            const peridValidation = validatePerid(peridValue);
+            
+            if (!peridValidation.valid) {
+                showMessage(`❌ ${peridValidation.message}`, 'error');
                 peridInput.focus();
+                peridInput.select();
                 return;
             }
             
-            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
-                showMessage('Veuillez remplir le PIT ID', 'error');
-                pitidInput.focus();
-                return;
+            // Validation du PIT ID (si nécessaire)
+            if (config.fields.includes('pitid')) {
+                const pitidValue = pitidInput.value.trim();
+                const pitidValidation = validatePitid(pitidValue);
+                
+                if (!pitidValidation.valid) {
+                    showMessage(`❌ ${pitidValidation.message}`, 'error');
+                    pitidInput.focus();
+                    pitidInput.select();
+                    return;
+                }
             }
             
+            // Validation de l'adresse (si nécessaire)
             if (config.fields.includes('address') && !addressInput.value.trim()) {
                 const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
-                showMessage(`Veuillez remplir ${addressType}`, 'error');
+                showMessage(`❌ Veuillez remplir ${addressType}`, 'error');
                 addressInput.focus();
                 return;
             }
@@ -875,6 +904,91 @@
         });
         
         // ===== FIN GESTION DU TYPE D'OPÉRATION =====
+        
+        // ===== FONCTIONS DE VALIDATION =====
+        
+        // Vérifier si c'est une suite de chiffres identiques (111111, 222222, etc.)
+        function isRepeatingDigits(value) {
+            return /^(\d)\1+$/.test(value);
+        }
+        
+        // Vérifier si c'est une séquence croissante ou décroissante
+        function isSequentialDigits(value) {
+            const digits = value.split('').map(Number);
+            
+            // Vérifier séquence croissante (123456, 1234567)
+            let isAscending = true;
+            for (let i = 1; i < digits.length; i++) {
+                if (digits[i] !== digits[i - 1] + 1) {
+                    isAscending = false;
+                    break;
+                }
+            }
+            
+            // Vérifier séquence décroissante (654321, 7654321)
+            let isDescending = true;
+            for (let i = 1; i < digits.length; i++) {
+                if (digits[i] !== digits[i - 1] - 1) {
+                    isDescending = false;
+                    break;
+                }
+            }
+            
+            return isAscending || isDescending;
+        }
+        
+        // Valider le PERID (6 chiffres, pas de répétitions sauf 888888 et 666666, pas de séquences)
+        function validatePerid(value) {
+            if (!value || value.length !== 6) {
+                return { valid: false, message: 'Le PER ID doit contenir exactement 6 chiffres' };
+            }
+            
+            if (!/^\d{6}$/.test(value)) {
+                return { valid: false, message: 'Le PER ID doit contenir uniquement des chiffres' };
+            }
+            
+            // Exceptions autorisées
+            if (value === '888888' || value === '666666') {
+                return { valid: true, message: '' };
+            }
+            
+            // Vérifier les répétitions
+            if (isRepeatingDigits(value)) {
+                return { valid: false, message: 'Le PER ID ne peut pas être une suite de chiffres identiques (ex: 111111, 222222...)' };
+            }
+            
+            // Vérifier les séquences
+            if (isSequentialDigits(value)) {
+                return { valid: false, message: 'Le PER ID ne peut pas être une séquence (ex: 123456, 654321)' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+        
+        // Valider le PITID (7 chiffres, pas de répétitions, pas de séquences)
+        function validatePitid(value) {
+            if (!value || value.length !== 7) {
+                return { valid: false, message: 'Le PIT ID doit contenir exactement 7 chiffres' };
+            }
+            
+            if (!/^\d{7}$/.test(value)) {
+                return { valid: false, message: 'Le PIT ID doit contenir uniquement des chiffres' };
+            }
+            
+            // Vérifier les répétitions
+            if (isRepeatingDigits(value)) {
+                return { valid: false, message: 'Le PIT ID ne peut pas être une suite de chiffres identiques (ex: 1111111, 2222222...)' };
+            }
+            
+            // Vérifier les séquences
+            if (isSequentialDigits(value)) {
+                return { valid: false, message: 'Le PIT ID ne peut pas être une séquence (ex: 1234567, 7654321)' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+        
+        // ===== FIN FONCTIONS DE VALIDATION =====
         
         // Charger les données sauvegardées
         function loadConfig() {
@@ -920,6 +1034,56 @@
         pitidInput.addEventListener('change', saveSessionData);
         addressInput.addEventListener('change', saveSessionData);
         initialCommentsInput.addEventListener('change', saveSessionData);
+        
+        // Validation en temps réel pour le PERID (n'accepter que des chiffres)
+        peridInput.addEventListener('input', (e) => {
+            // Supprimer tous les caractères non numériques
+            e.target.value = e.target.value.replace(/\D/g, '');
+            
+            // Limiter à 6 chiffres
+            if (e.target.value.length > 6) {
+                e.target.value = e.target.value.substring(0, 6);
+            }
+            
+            // Validation complète si 6 chiffres
+            if (e.target.value.length === 6) {
+                const validation = validatePerid(e.target.value);
+                if (validation.valid) {
+                    e.target.style.borderColor = 'var(--accent)';
+                } else {
+                    e.target.style.borderColor = 'var(--error)';
+                }
+            } else if (e.target.value.length > 0) {
+                e.target.style.borderColor = 'var(--warning)';
+            } else {
+                e.target.style.borderColor = 'var(--border)';
+            }
+        });
+        
+        // Validation en temps réel pour le PITID (n'accepter que des chiffres)
+        pitidInput.addEventListener('input', (e) => {
+            // Supprimer tous les caractères non numériques
+            e.target.value = e.target.value.replace(/\D/g, '');
+            
+            // Limiter à 7 chiffres
+            if (e.target.value.length > 7) {
+                e.target.value = e.target.value.substring(0, 7);
+            }
+            
+            // Validation complète si 7 chiffres
+            if (e.target.value.length === 7) {
+                const validation = validatePitid(e.target.value);
+                if (validation.valid) {
+                    e.target.style.borderColor = 'var(--accent)';
+                } else {
+                    e.target.style.borderColor = 'var(--error)';
+                }
+            } else if (e.target.value.length > 0) {
+                e.target.style.borderColor = 'var(--warning)';
+            } else {
+                e.target.style.borderColor = 'var(--border)';
+            }
+        });
         
         // ===== RÉINITIALISATION =====
         
@@ -1202,26 +1366,37 @@
         
         // Envoyer tous les articles vers SharePoint
         sendAllBtn.addEventListener('click', async () => {
-            // Vérifier que les champs obligatoires sont remplis
-            if (!peridInput.value.trim()) {
-                showMessage('Veuillez remplir le PER ID', 'error');
+            // Validation du PER ID
+            const peridValue = peridInput.value.trim();
+            const peridValidation = validatePerid(peridValue);
+            
+            if (!peridValidation.valid) {
+                showMessage(`❌ ${peridValidation.message}`, 'error');
                 return;
             }
             
             const config = operationConfig[operationType];
-            if (config.fields.includes('pitid') && !pitidInput.value.trim()) {
-                showMessage('Veuillez remplir le PIT ID', 'error');
-                return;
+            
+            // Validation du PIT ID (si nécessaire)
+            if (config.fields.includes('pitid')) {
+                const pitidValue = pitidInput.value.trim();
+                const pitidValidation = validatePitid(pitidValue);
+                
+                if (!pitidValidation.valid) {
+                    showMessage(`❌ ${pitidValidation.message}`, 'error');
+                    return;
+                }
             }
             
+            // Validation de l'adresse (si nécessaire)
             if (config.fields.includes('address') && !addressInput.value.trim()) {
                 const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
-                showMessage(`Veuillez remplir ${addressType}`, 'error');
+                showMessage(`❌ Veuillez remplir ${addressType}`, 'error');
                 return;
             }
             
             if (itemQueue.length === 0) {
-                showMessage('Aucun article à envoyer', 'error');
+                showMessage('❌ Aucun article à envoyer', 'error');
                 return;
             }
             

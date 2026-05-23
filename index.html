@@ -1000,9 +1000,9 @@
             return { valid: true, message: '' };
         }
         
-        // Valider l'adresse (minimum 5 caractères)
+        // Valider l'adresse (minimum 10 caractères)
         function validateAddress(value) {
-            if (!value || value.trim().length < 5) {
+            if (!value || value.trim().length < 10) {
                 return { valid: false, message: 'L\'adresse doit contenir au moins 5 caractères' };
             }
             

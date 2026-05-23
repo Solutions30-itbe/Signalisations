@@ -643,7 +643,14 @@
             <!-- Champ Adresse (visible pour placement et reprise) -->
             <div class="form-group" id="addressGroup" style="display: none;">
                 <label for="addressInput" id="addressLabel">Adresse</label>
-                <textarea id="addressInput" placeholder="Adresse du chantier..." rows="2"></textarea>
+                <textarea id="addressInput" 
+                          placeholder="Adresse du chantier..." 
+                          rows="2"
+                          required
+                          minlength="5"></textarea>
+                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 4px;">
+                    Obligatoire • Minimum 5 caractères
+                </small>
             </div>
             
             <!-- Champ Commentaires (optionnel, toujours visible) -->
@@ -886,11 +893,16 @@
             }
             
             // Validation de l'adresse (si nécessaire)
-            if (config.fields.includes('address') && !addressInput.value.trim()) {
-                const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
-                showMessage(`❌ Veuillez remplir ${addressType}`, 'error');
-                addressInput.focus();
-                return;
+            if (config.fields.includes('address')) {
+                const addressValue = addressInput.value.trim();
+                const addressValidation = validateAddress(addressValue);
+                
+                if (!addressValidation.valid) {
+                    showMessage(`❌ ${addressValidation.message}`, 'error');
+                    addressInput.focus();
+                    addressInput.select();
+                    return;
+                }
             }
             
             // Sauvegarder les données
@@ -988,6 +1000,15 @@
             return { valid: true, message: '' };
         }
         
+        // Valider l'adresse (minimum 5 caractères)
+        function validateAddress(value) {
+            if (!value || value.trim().length < 5) {
+                return { valid: false, message: 'L\'adresse doit contenir au moins 5 caractères' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+        
         // ===== FIN FONCTIONS DE VALIDATION =====
         
         // Charger les données sauvegardées
@@ -1079,6 +1100,19 @@
                     e.target.style.borderColor = 'var(--error)';
                 }
             } else if (e.target.value.length > 0) {
+                e.target.style.borderColor = 'var(--warning)';
+            } else {
+                e.target.style.borderColor = 'var(--border)';
+            }
+        });
+        
+        // Validation en temps réel pour l'adresse
+        addressInput.addEventListener('input', (e) => {
+            const value = e.target.value.trim();
+            
+            if (value.length >= 5) {
+                e.target.style.borderColor = 'var(--accent)';
+            } else if (value.length > 0) {
                 e.target.style.borderColor = 'var(--warning)';
             } else {
                 e.target.style.borderColor = 'var(--border)';
@@ -1389,10 +1423,14 @@
             }
             
             // Validation de l'adresse (si nécessaire)
-            if (config.fields.includes('address') && !addressInput.value.trim()) {
-                const addressType = operationType === 'reprise' ? 'l\'adresse de récupération' : 'l\'adresse du chantier';
-                showMessage(`❌ Veuillez remplir ${addressType}`, 'error');
-                return;
+            if (config.fields.includes('address')) {
+                const addressValue = addressInput.value.trim();
+                const addressValidation = validateAddress(addressValue);
+                
+                if (!addressValidation.valid) {
+                    showMessage(`❌ ${addressValidation.message}`, 'error');
+                    return;
+                }
             }
             
             if (itemQueue.length === 0) {

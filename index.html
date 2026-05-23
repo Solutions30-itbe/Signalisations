@@ -1221,6 +1221,19 @@
             sendAllBtn.disabled = true;
             sendAllBtn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
             
+            // Formater la date au format DD_MM_YYYY
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const formattedDate = `${day}_${month}_${year}`;
+            
+            // Formater le type d'opération (remplacer espaces par underscores)
+            const formattedOperationType = config.label.replace(/\s+/g, '_');
+            
+            // Construire le scannedBy au format: Mouv_PERID_DATE_TYPE
+            const scannedByValue = `Mouv_${peridInput.value.trim()}_${formattedDate}_${formattedOperationType}`;
+            
             const batchData = {
                 // Type d'opération
                 operationType: operationType,
@@ -1243,7 +1256,7 @@
                 // Métadonnées
                 totalItems: parseInt(itemQueue.length),
                 batchTimestamp: new Date().toISOString(),
-                scannedBy: `Technicien ${peridInput.value.trim()}`
+                scannedBy: scannedByValue
             };
             
             try {

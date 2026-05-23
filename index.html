@@ -594,6 +594,15 @@
                 </small>
             </div>
             
+            <div class="form-group">
+                <label for="loginPasswordInput">Mot de passe</label>
+                <input type="password" 
+                       id="loginPasswordInput" 
+                       placeholder="Entrez votre mot de passe"
+                       required
+                       autocomplete="off">
+            </div>
+            
             <button id="loginBtn" class="btn btn-primary">
                 ✓ Se connecter
             </button>
@@ -763,6 +772,7 @@
         // Éléments du DOM - Connexion
         const loginSection = document.getElementById('loginSection');
         const loginPeridInput = document.getElementById('loginPeridInput');
+        const loginPasswordInput = document.getElementById('loginPasswordInput');
         const loginBtn = document.getElementById('loginBtn');
         
         // Éléments du DOM - Sélection d'opération
@@ -809,6 +819,12 @@
         // Vérifier si un PERID a un accès complet
         function hasFullAccess(perid) {
             return FULL_ACCESS_PERIDS.includes(perid);
+        }
+        
+        // Valider le mot de passe (doit être "pw" + PERID)
+        function validatePassword(perid, password) {
+            const expectedPassword = `pw${perid}`;
+            return password === expectedPassword;
         }
         
         // Afficher les opérations disponibles selon le PERID
@@ -895,12 +911,29 @@
         // Fonction de connexion
         loginBtn.addEventListener('click', () => {
             const peridValue = loginPeridInput.value.trim();
+            const passwordValue = loginPasswordInput.value.trim();
+            
+            // Validation du PERID
             const peridValidation = validatePerid(peridValue);
             
             if (!peridValidation.valid) {
                 showMessage(`❌ ${peridValidation.message}`, 'error');
                 loginPeridInput.focus();
                 loginPeridInput.select();
+                return;
+            }
+            
+            // Validation du mot de passe
+            if (!passwordValue) {
+                showMessage('❌ Veuillez entrer votre mot de passe', 'error');
+                loginPasswordInput.focus();
+                return;
+            }
+            
+            if (!validatePassword(peridValue, passwordValue)) {
+                showMessage('❌ Mot de passe incorrect', 'error');
+                loginPasswordInput.focus();
+                loginPasswordInput.select();
                 return;
             }
             
@@ -926,8 +959,10 @@
         function logout() {
             currentPerid = '';
             loginPeridInput.value = '';
+            loginPasswordInput.value = '';
             operationTypeSection.style.display = 'none';
             loginSection.style.display = 'block';
+            loginPeridInput.focus();
             showMessage('Déconnecté', 'success');
         }
         
@@ -956,9 +991,17 @@
             }
         });
         
-        // Permettre de valider avec la touche Entrée
+        // Permettre de naviguer avec la touche Entrée
         loginPeridInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
+                loginPasswordInput.focus();
+            }
+        });
+        
+        loginPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
                 loginBtn.click();
             }
         });
@@ -1179,6 +1222,12 @@
             return { valid: true, message: '' };
         }
         
+        // Valider le mot de passe (format: pw + PERID)
+        function validatePassword(perid, password) {
+            const expectedPassword = 'pw' + perid;
+            return password === expectedPassword;
+        }
+        
         // ===== FIN FONCTIONS DE VALIDATION =====
         
         // Charger les données sauvegardées
@@ -1346,6 +1395,7 @@
             // Afficher l'écran de connexion
             loginSection.style.display = 'block';
             loginPeridInput.value = '';
+            loginPasswordInput.value = '';
             
             showMessage('✓ Réinitialisation effectuée. Veuillez vous reconnecter.', 'success');
         });

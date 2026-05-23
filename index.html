@@ -573,33 +573,35 @@
             <p class="subtitle">Scannez les articles puis envoyez-les tous en une fois</p>
         </header>
         
-        <!-- Sélection du type d'opération -->
-        <div class="card" id="operationTypeSection">
+        <!-- Section de connexion PERID (nouvelle page de garde) -->
+        <div class="card" id="loginSection">
             <h2 style="font-family: 'Space Mono', monospace; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; text-align: center;">
-                Type d'opération
+                Identification
             </h2>
             
-            <div class="operation-type-grid">
-                <button class="operation-type-btn" data-type="fourniture">
-                    <div class="operation-icon">📦</div>
-                    <div class="operation-label">Fourniture technicien</div>
-                </button>
-                
-                <button class="operation-type-btn" data-type="placement">
-                    <div class="operation-icon">🏗️</div>
-                    <div class="operation-label">Placement chantier</div>
-                </button>
-                
-                <button class="operation-type-btn" data-type="reprise">
-                    <div class="operation-icon">🔄</div>
-                    <div class="operation-label">Reprise chantier</div>
-                </button>
-                
-                <button class="operation-type-btn" data-type="retour">
-                    <div class="operation-icon">⬅️</div>
-                    <div class="operation-label">Retour stock</div>
-                </button>
+            <div class="form-group">
+                <label for="loginPeridInput">PER ID (Technicien) - 6 chiffres</label>
+                <input type="text" 
+                       id="loginPeridInput" 
+                       placeholder="Ex: 835967" 
+                       pattern="[0-9]{6}" 
+                       maxlength="6"
+                       inputmode="numeric"
+                       required
+                       autofocus>
+                <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 4px;">
+                    6 chiffres • Pas de répétitions (111111, 222222...) sauf 888888 et 666666 • Pas de séquences (123456)
+                </small>
             </div>
+            
+            <button id="loginBtn" class="btn btn-primary">
+                ✓ Se connecter
+            </button>
+        </div>
+        
+        <!-- Sélection du type d'opération -->
+        <div class="card" id="operationTypeSection" style="display: none;">
+            <!-- Le contenu sera généré dynamiquement selon les droits d'accès -->
         </div>
         
         <!-- Formulaire de session (caché par défaut) -->
@@ -753,6 +755,15 @@
         let scannedBarcode = '';
         let itemQueue = []; // File d'attente des articles
         let operationType = ''; // Type d'opération sélectionné
+        let currentPerid = ''; // PERID de l'utilisateur connecté
+        
+        // Liste des PERIDs avec accès complet (tous les types d'opération)
+        const FULL_ACCESS_PERIDS = ['835967', '887850', '850644', '847464', '817780', '833564', '816042'];
+        
+        // Éléments du DOM - Connexion
+        const loginSection = document.getElementById('loginSection');
+        const loginPeridInput = document.getElementById('loginPeridInput');
+        const loginBtn = document.getElementById('loginBtn');
         
         // Éléments du DOM - Sélection d'opération
         const operationTypeSection = document.getElementById('operationTypeSection');
@@ -792,6 +803,165 @@
         const sendAllBtn = document.getElementById('sendAllBtn');
         const clearQueueBtn = document.getElementById('clearQueueBtn');
         const testConnectionBtn = document.getElementById('testConnectionBtn');
+        
+        // ===== GESTION DU TYPE D'OPÉRATION =====
+        
+        // Vérifier si un PERID a un accès complet
+        function hasFullAccess(perid) {
+            return FULL_ACCESS_PERIDS.includes(perid);
+        }
+        
+        // Afficher les opérations disponibles selon le PERID
+        function displayAvailableOperations(perid) {
+            const isFullAccess = hasFullAccess(perid);
+            
+            // Déterminer quelles opérations afficher
+            const availableOperations = isFullAccess 
+                ? ['fourniture', 'placement', 'reprise', 'retour']  // Accès complet
+                : ['placement', 'reprise'];  // Accès limité (techniciens)
+            
+            // Construire le HTML des boutons
+            let buttonsHTML = '';
+            
+            if (availableOperations.includes('fourniture')) {
+                buttonsHTML += `
+                    <button class="operation-type-btn" data-type="fourniture">
+                        <div class="operation-icon">📦</div>
+                        <div class="operation-label">Fourniture technicien</div>
+                    </button>
+                `;
+            }
+            
+            if (availableOperations.includes('placement')) {
+                buttonsHTML += `
+                    <button class="operation-type-btn" data-type="placement">
+                        <div class="operation-icon">🏗️</div>
+                        <div class="operation-label">Placement chantier</div>
+                    </button>
+                `;
+            }
+            
+            if (availableOperations.includes('reprise')) {
+                buttonsHTML += `
+                    <button class="operation-type-btn" data-type="reprise">
+                        <div class="operation-icon">🔄</div>
+                        <div class="operation-label">Reprise chantier</div>
+                    </button>
+                `;
+            }
+            
+            if (availableOperations.includes('retour')) {
+                buttonsHTML += `
+                    <button class="operation-type-btn" data-type="retour">
+                        <div class="operation-icon">⬅️</div>
+                        <div class="operation-label">Retour stock</div>
+                    </button>
+                `;
+            }
+            
+            // Afficher le titre avec indication d'accès
+            const accessLabel = isFullAccess ? 'Accès complet' : 'Accès technicien';
+            const accessColor = isFullAccess ? 'var(--accent)' : 'var(--warning)';
+            
+            operationTypeSection.innerHTML = `
+                <h2 style="font-family: 'Space Mono', monospace; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; text-align: center;">
+                    Type d'opération
+                </h2>
+                <div style="text-align: center; margin-bottom: 16px;">
+                    <span style="background: ${accessColor}; color: var(--bg-primary); padding: 6px 12px; border-radius: 20px; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700;">
+                        ${accessLabel}
+                    </span>
+                    <button id="logoutBtn" class="btn-link" style="display: block; margin: 12px auto 0; color: var(--text-secondary); background: none; border: none; cursor: pointer; text-decoration: underline; font-size: 0.85rem;">
+                        Se déconnecter
+                    </button>
+                </div>
+                <div class="operation-type-grid">
+                    ${buttonsHTML}
+                </div>
+            `;
+            
+            // Réattacher les event listeners aux nouveaux boutons
+            document.querySelectorAll('.operation-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.dataset.type;
+                    selectOperationType(type);
+                });
+            });
+            
+            // Ajouter event listener pour le bouton de déconnexion
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+        
+        // Fonction de connexion
+        loginBtn.addEventListener('click', () => {
+            const peridValue = loginPeridInput.value.trim();
+            const peridValidation = validatePerid(peridValue);
+            
+            if (!peridValidation.valid) {
+                showMessage(`❌ ${peridValidation.message}`, 'error');
+                loginPeridInput.focus();
+                loginPeridInput.select();
+                return;
+            }
+            
+            // Enregistrer le PERID
+            currentPerid = peridValue;
+            
+            // Pré-remplir le PERID dans le formulaire de session
+            peridInput.value = peridValue;
+            saveSessionData();
+            
+            // Masquer la section de connexion
+            loginSection.style.display = 'none';
+            
+            // Afficher les opérations disponibles
+            displayAvailableOperations(peridValue);
+            operationTypeSection.style.display = 'block';
+            
+            const accessType = hasFullAccess(peridValue) ? 'complet' : 'technicien';
+            showMessage(`✓ Connecté avec succès (Accès ${accessType})`, 'success');
+        });
+        
+        // Fonction de déconnexion
+        function logout() {
+            currentPerid = '';
+            loginPeridInput.value = '';
+            operationTypeSection.style.display = 'none';
+            loginSection.style.display = 'block';
+            showMessage('Déconnecté', 'success');
+        }
+        
+        // Validation en temps réel pour le PERID de connexion
+        loginPeridInput.addEventListener('input', (e) => {
+            // Supprimer tous les caractères non numériques
+            e.target.value = e.target.value.replace(/\D/g, '');
+            
+            // Limiter à 6 chiffres
+            if (e.target.value.length > 6) {
+                e.target.value = e.target.value.substring(0, 6);
+            }
+            
+            // Validation complète si 6 chiffres
+            if (e.target.value.length === 6) {
+                const validation = validatePerid(e.target.value);
+                if (validation.valid) {
+                    e.target.style.borderColor = 'var(--accent)';
+                } else {
+                    e.target.style.borderColor = 'var(--error)';
+                }
+            } else if (e.target.value.length > 0) {
+                e.target.style.borderColor = 'var(--warning)';
+            } else {
+                e.target.style.borderColor = 'var(--border)';
+            }
+        });
+        
+        // Permettre de valider avec la touche Entrée
+        loginPeridInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
         
         // ===== GESTION DU TYPE D'OPÉRATION =====
         
@@ -1019,7 +1189,7 @@
             const savedAddress = localStorage.getItem('address') || '';
             const savedComments = localStorage.getItem('initialComments') || '';
             
-            peridInput.value = savedPerid;
+            // Pré-remplir uniquement les champs du formulaire (pas le login)
             pitidInput.value = savedPitid;
             addressInput.value = savedAddress;
             initialCommentsInput.value = savedComments;
@@ -1035,8 +1205,9 @@
                 }
             }
             
-            // TOUJOURS démarrer sur la page de garde
-            operationTypeSection.style.display = 'block';
+            // TOUJOURS démarrer sur la page de connexion
+            loginSection.style.display = 'block';
+            operationTypeSection.style.display = 'none';
             sessionFormSection.style.display = 'none';
             scanningSection.style.display = 'none';
         }
@@ -1155,6 +1326,7 @@
             // Réinitialiser les variables
             operationType = '';
             scannedBarcode = '';
+            currentPerid = '';
             
             // Nettoyer localStorage
             localStorage.removeItem('operationType');
@@ -1167,13 +1339,15 @@
             // Masquer toutes les sections
             sessionFormSection.style.display = 'none';
             scanningSection.style.display = 'none';
+            operationTypeSection.style.display = 'none';
             formSection.style.display = 'none';
             scanResultZone.innerHTML = '';
             
-            // Afficher l'écran de sélection
-            operationTypeSection.style.display = 'block';
+            // Afficher l'écran de connexion
+            loginSection.style.display = 'block';
+            loginPeridInput.value = '';
             
-            showMessage('✓ Réinitialisation effectuée. Sélectionnez un type d\'opération.', 'success');
+            showMessage('✓ Réinitialisation effectuée. Veuillez vous reconnecter.', 'success');
         });
         
         // ===== FIN RÉINITIALISATION =====

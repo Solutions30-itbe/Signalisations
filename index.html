@@ -1503,8 +1503,7 @@
             saveQueue();
             updateQueueDisplay();
             
-            // Réinitialiser les champs de formulaire
-            peridInput.value = '';
+            // Réinitialiser les champs de formulaire (sauf PERID qui reste pré-rempli)
             pitidInput.value = '';
             addressInput.value = '';
             initialCommentsInput.value = '';
@@ -1512,15 +1511,13 @@
             quantityInput.value = '1';
             notesInput.value = '';
             
-            // Réinitialiser les variables
+            // Réinitialiser les variables (sauf currentPerid pour rester connecté)
             operationType = '';
             scannedBarcode = '';
             selectedSupport = '';
-            currentPerid = '';
             
-            // Nettoyer localStorage
+            // Nettoyer localStorage (sauf la connexion)
             localStorage.removeItem('operationType');
-            localStorage.removeItem('perid');
             localStorage.removeItem('pitid');
             localStorage.removeItem('address');
             localStorage.removeItem('initialComments');
@@ -1529,17 +1526,15 @@
             // Masquer toutes les sections
             sessionFormSection.style.display = 'none';
             scanningSection.style.display = 'none';
-            operationTypeSection.style.display = 'none';
             formSection.style.display = 'none';
             supportChoiceSection.style.display = 'none';
             scanResultZone.innerHTML = '';
             
-            // Afficher l'écran de connexion
-            loginSection.style.display = 'block';
-            loginPeridInput.value = '';
-            loginPasswordInput.value = '';
+            // Retour à la sélection du type d'opération (en restant connecté)
+            operationTypeSection.style.display = 'block';
+            loginSection.style.display = 'none';
             
-            showMessage('✓ Réinitialisation effectuée. Veuillez vous reconnecter.', 'success');
+            showMessage('✓ Réinitialisation effectuée. Sélectionnez un type d\'opération.', 'success');
         });
         
         // ===== FIN RÉINITIALISATION =====

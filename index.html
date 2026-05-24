@@ -1626,7 +1626,7 @@
             }
             
             scannedBarcode = decodedText;
-            selectedSupport = ''; // Réinitialiser le choix de support
+            selectedSupport = ''; // Réinitialiser le choix
             
             // Vibration haptique si disponible
             if (navigator.vibrate) {
@@ -1648,7 +1648,7 @@
             quantityInput.value = '1';
             notesInput.value = '';
             
-            // Afficher le choix de support (Big Foot / Mini Foot)
+            // Afficher le choix de support au lieu du formulaire
             supportChoiceSection.style.display = 'block';
             formSection.style.display = 'none';
             
@@ -1710,7 +1710,7 @@
             // Item 1: Le panneau (code-barres scanné)
             const panelItem = {
                 id: baseId,
-                type: 'panel', // Type principal
+                type: 'panel',
                 barcode: panelBarcode,
                 quantity: 1,
                 notes: notesInput.value || '',
@@ -1725,7 +1725,7 @@
                 quantity: 1,
                 notes: '',
                 timestamp: timestamp,
-                parentBarcode: panelBarcode // Lien vers le panneau parent
+                parentBarcode: panelBarcode
             };
             
             // Item 3: Big Foot ou Mini Foot (composant)
@@ -1736,7 +1736,7 @@
                 quantity: 1,
                 notes: '',
                 timestamp: timestamp,
-                parentBarcode: panelBarcode // Lien vers le panneau parent
+                parentBarcode: panelBarcode
             };
             
             // Ajouter les 3 items à la file d'attente
@@ -1833,15 +1833,12 @@
             if (panelToRemove && panelToRemove.type === 'panel') {
                 // Supprimer le panneau ET tous ses composants associés
                 itemQueue = itemQueue.filter(item => {
-                    // Garder uniquement les items qui ne sont pas :
-                    // - le panneau lui-même
-                    // - les composants liés à ce panneau
                     return item.id !== id && item.parentBarcode !== panelToRemove.barcode;
                 });
                 
                 showMessage('Panneau et composants supprimés de la liste', 'success');
             } else {
-                // Supprimer un item simple (ne devrait pas arriver avec les composants)
+                // Supprimer un item simple
                 itemQueue = itemQueue.filter(item => item.id !== id);
                 showMessage('Article supprimé de la liste', 'success');
             }
@@ -1949,16 +1946,16 @@
                             quantity: parseInt(item.quantity),
                             notes: item.notes || "",
                             timestamp: item.timestamp,
-                            type: item.type || 'panel', // 'panel' ou 'component'
+                            type: item.type || 'panel',
                             parentBarcode: item.parentBarcode || ""
                         }],
                         
                         // Métadonnées
-                        totalItems: 1, // Toujours 1 car on envoie item par item
+                        totalItems: 1,
                         batchTimestamp: new Date().toISOString(),
                         scannedBy: scannedByValue,
-                        itemIndex: i + 1, // Index de cet item dans le batch complet
-                        totalBatchItems: totalItems // Nombre total d'items dans le batch complet
+                        itemIndex: i + 1,
+                        totalBatchItems: totalItems
                     };
                     
                     try {
@@ -1982,7 +1979,7 @@
                         console.error(`Erreur envoi item ${i + 1}:`, itemError);
                     }
                     
-                    // Petite pause entre les envois pour éviter de surcharger le serveur
+                    // Petite pause entre les envois
                     if (i < itemQueue.length - 1) {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
@@ -2000,6 +1997,9 @@
                     showMessage(`⚠️ Envoi partiel: ${successCount} réussi(s), ${errorCount} échec(s)`, 'warning');
                 }
                 
+                // Réactiver le bouton
+                sendAllBtn.disabled = false;
+                sendAllBtn.innerHTML = '🚀 Tout envoyer et clôturer';
                 // Réactiver le bouton
                 sendAllBtn.disabled = false;
                 sendAllBtn.innerHTML = '🚀 Tout envoyer et clôturer';
@@ -2024,19 +2024,6 @@
                 showMessage(errorMessage, 'error');
                 sendAllBtn.disabled = false;
                 sendAllBtn.innerHTML = '🚀 Tout envoyer et clôturer';
-            }
-        });
-                    errorMessage += '1. Vérifiez que le workflow Power Automate est activé\n';
-                    errorMessage += '2. Vérifiez que l\'authentification est sur "N\'importe qui"\n';
-                    errorMessage += '3. Essayez de désactiver/réactiver le workflow\n\n';
-                    errorMessage += 'Détails technique: ' + error.message;
-                } else {
-                    errorMessage += '📄 Détails: ' + error.message;
-                }
-                
-                showMessage(errorMessage, 'error');
-                sendAllBtn.disabled = false;
-                sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
             }
         });
         

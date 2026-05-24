@@ -311,6 +311,69 @@
             font-family: 'IBM Plex Sans', sans-serif;
         }
         
+        /* Choix du support (Big Foot / Mini Foot) */
+        .support-choice {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        .support-choice-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .support-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .support-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            color: var(--text-primary);
+        }
+        
+        .support-btn:hover {
+            background: var(--border);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+        
+        .support-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+        
+        .support-icon {
+            font-size: 2.5rem;
+        }
+        
+        .support-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
         /* Zone de message */
         .message-zone {
             margin-top: 20px;
@@ -470,6 +533,12 @@
             border-radius: 12px;
             padding: 16px;
             animation: slideIn 0.3s ease-out;
+        }
+        
+        .queue-item.component {
+            border-left: 4px solid var(--warning);
+            padding-left: 20px;
+            background: rgba(245, 158, 11, 0.05);
         }
         
         .queue-item-header {
@@ -700,6 +769,23 @@
             <!-- Résultat du scan actuel -->
             <div id="scanResultZone"></div>
             
+            <!-- Choix du support (Big Foot / Mini Foot) -->
+            <div id="supportChoiceSection" style="display: none;">
+                <div class="support-choice">
+                    <div class="support-choice-title">Quel type de support ?</div>
+                    <div class="support-buttons">
+                        <button class="support-btn" id="bigFootBtn">
+                            <div class="support-icon">🦶</div>
+                            <div class="support-label">Big Foot</div>
+                        </button>
+                        <button class="support-btn" id="miniFootBtn">
+                            <div class="support-icon">👣</div>
+                            <div class="support-label">Mini Foot</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Formulaire pour l'article scanné -->
             <div id="formSection" style="display: none;">
                 <div class="form-group">
@@ -763,6 +849,7 @@
         let html5QrCode;
         let isScanning = false;
         let scannedBarcode = '';
+        let selectedSupport = ''; // 'Big Foot' ou 'Mini Foot'
         let itemQueue = []; // File d'attente des articles
         let operationType = ''; // Type d'opération sélectionné
         let currentPerid = ''; // PERID de l'utilisateur connecté
@@ -799,6 +886,9 @@
         const scanBtn = document.getElementById('scanBtn');
         const stopBtn = document.getElementById('stopBtn');
         const scanResultZone = document.getElementById('scanResultZone');
+        const supportChoiceSection = document.getElementById('supportChoiceSection');
+        const bigFootBtn = document.getElementById('bigFootBtn');
+        const miniFootBtn = document.getElementById('miniFootBtn');
         const formSection = document.getElementById('formSection');
         const barcodeInput = document.getElementById('barcodeInput');
         const quantityInput = document.getElementById('quantityInput');
@@ -1420,6 +1510,7 @@
             // Réinitialiser les variables
             operationType = '';
             scannedBarcode = '';
+            selectedSupport = '';
             currentPerid = '';
             
             // Nettoyer localStorage
@@ -1435,6 +1526,7 @@
             scanningSection.style.display = 'none';
             operationTypeSection.style.display = 'none';
             formSection.style.display = 'none';
+            supportChoiceSection.style.display = 'none';
             scanResultZone.innerHTML = '';
             
             // Afficher l'écran de connexion
@@ -1534,6 +1626,7 @@
             }
             
             scannedBarcode = decodedText;
+            selectedSupport = ''; // Réinitialiser le choix de support
             
             // Vibration haptique si disponible
             if (navigator.vibrate) {
@@ -1555,16 +1648,46 @@
             quantityInput.value = '1';
             notesInput.value = '';
             
-            // Afficher le formulaire
-            formSection.style.display = 'block';
+            // Afficher le choix de support (Big Foot / Mini Foot)
+            supportChoiceSection.style.display = 'block';
+            formSection.style.display = 'none';
             
-            showMessage('✓ Code-barres scanné! Ajoutez-le à la liste ou scannez le suivant.', 'success');
+            // Réinitialiser les styles des boutons
+            bigFootBtn.classList.remove('selected');
+            miniFootBtn.classList.remove('selected');
+            
+            showMessage('✓ Code-barres scanné! Choisissez le type de support.', 'success');
         }
         
         // Callback d'erreur du scan
         function onScanError(errorMessage) {
             // Ignorer les erreurs de scan normales
         }
+        
+        // Event listeners pour le choix de support
+        bigFootBtn.addEventListener('click', () => {
+            selectedSupport = 'Big Foot';
+            bigFootBtn.classList.add('selected');
+            miniFootBtn.classList.remove('selected');
+            
+            // Afficher le formulaire après sélection
+            supportChoiceSection.style.display = 'none';
+            formSection.style.display = 'block';
+            
+            showMessage('✓ Big Foot sélectionné. Ajoutez des notes si nécessaire.', 'success');
+        });
+        
+        miniFootBtn.addEventListener('click', () => {
+            selectedSupport = 'Mini Foot';
+            miniFootBtn.classList.add('selected');
+            bigFootBtn.classList.remove('selected');
+            
+            // Afficher le formulaire après sélection
+            supportChoiceSection.style.display = 'none';
+            formSection.style.display = 'block';
+            
+            showMessage('✓ Mini Foot sélectionné. Ajoutez des notes si nécessaire.', 'success');
+        });
         
         // Ajouter à la file d'attente
         addToQueueBtn.addEventListener('click', () => {
@@ -1573,37 +1696,82 @@
                 return;
             }
             
-            const item = {
-                id: Date.now(),
-                barcode: barcodeInput.value,
-                quantity: parseInt(quantityInput.value) || 1,
+            if (!selectedSupport) {
+                showMessage('❌ Veuillez sélectionner le type de support (Big Foot ou Mini Foot)', 'error');
+                return;
+            }
+            
+            const timestamp = new Date().toISOString();
+            const panelBarcode = barcodeInput.value;
+            const baseId = Date.now();
+            
+            // Créer 3 items séparés pour SharePoint
+            
+            // Item 1: Le panneau (code-barres scanné)
+            const panelItem = {
+                id: baseId,
+                type: 'panel', // Type principal
+                barcode: panelBarcode,
+                quantity: 1,
                 notes: notesInput.value || '',
-                timestamp: new Date().toISOString()
+                timestamp: timestamp
             };
             
-            itemQueue.push(item);
+            // Item 2: Poteau aluminium (composant)
+            const poleItem = {
+                id: baseId + 1,
+                type: 'component',
+                barcode: 'Poteau aluminium',
+                quantity: 1,
+                notes: '',
+                timestamp: timestamp,
+                parentBarcode: panelBarcode // Lien vers le panneau parent
+            };
+            
+            // Item 3: Big Foot ou Mini Foot (composant)
+            const supportItem = {
+                id: baseId + 2,
+                type: 'component',
+                barcode: selectedSupport,
+                quantity: 1,
+                notes: '',
+                timestamp: timestamp,
+                parentBarcode: panelBarcode // Lien vers le panneau parent
+            };
+            
+            // Ajouter les 3 items à la file d'attente
+            itemQueue.push(panelItem);
+            itemQueue.push(poleItem);
+            itemQueue.push(supportItem);
+            
             saveQueue();
             updateQueueDisplay();
             
             // Réinitialiser le formulaire mais garder le scan actif
             scannedBarcode = '';
+            selectedSupport = '';
             barcodeInput.value = '';
             quantityInput.value = '1';
             notesInput.value = '';
             scanResultZone.innerHTML = '';
             formSection.style.display = 'none';
+            supportChoiceSection.style.display = 'none';
             
-            showMessage(`✓ Article ajouté! Total: ${itemQueue.length} article(s)`, 'success');
+            // Message avec détail des composants
+            const totalItems = itemQueue.filter(item => item.type === 'panel').length;
+            showMessage(`✓ Panneau + composants ajoutés! Total: ${totalItems} panneau(x)`, 'success');
         });
         
         // Annuler l'ajout
         cancelBtn.addEventListener('click', () => {
             scannedBarcode = '';
+            selectedSupport = '';
             barcodeInput.value = '';
             quantityInput.value = '1';
             notesInput.value = '';
             scanResultZone.innerHTML = '';
             formSection.style.display = 'none';
+            supportChoiceSection.style.display = 'none';
         });
         
         // Sauvegarder la file d'attente
@@ -1613,7 +1781,9 @@
         
         // Mettre à jour l'affichage de la file d'attente
         function updateQueueDisplay() {
-            queueCount.textContent = itemQueue.length;
+            // Compter uniquement les panneaux (pas les composants)
+            const panelCount = itemQueue.filter(item => item.type === 'panel').length;
+            queueCount.textContent = panelCount;
             
             if (itemQueue.length === 0) {
                 queueSection.style.display = 'none';
@@ -1623,11 +1793,16 @@
             
             queueSection.style.display = 'block';
             
-            queueList.innerHTML = itemQueue.map(item => `
-                <div class="queue-item">
+            queueList.innerHTML = itemQueue.map(item => {
+                const isComponent = item.type === 'component';
+                const componentClass = isComponent ? 'component' : '';
+                const componentIcon = isComponent ? '└─ ' : '📦 ';
+                
+                return `
+                <div class="queue-item ${componentClass}">
                     <div class="queue-item-header">
-                        <div class="queue-item-barcode">${item.barcode}</div>
-                        <button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>
+                        <div class="queue-item-barcode">${componentIcon}${item.barcode}</div>
+                        ${!isComponent ? `<button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>` : ''}
                     </div>
                     <div class="queue-item-details">
                         <div class="queue-item-detail">
@@ -1635,8 +1810,8 @@
                             <div class="queue-item-value">${item.quantity}</div>
                         </div>
                         <div class="queue-item-detail">
-                            <div class="queue-item-label">Horodatage</div>
-                            <div class="queue-item-value">${new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div>
+                            <div class="queue-item-label">${isComponent ? 'Type' : 'Horodatage'}</div>
+                            <div class="queue-item-value">${isComponent ? 'Composant' : new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div>
                         </div>
                         ${item.notes ? `
                         <div class="queue-item-detail" style="grid-column: 1 / -1;">
@@ -1646,20 +1821,39 @@
                         ` : ''}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
         // Supprimer un article de la file d'attente
         window.removeFromQueue = function(id) {
-            itemQueue = itemQueue.filter(item => item.id !== id);
+            // Trouver le panneau à supprimer
+            const panelToRemove = itemQueue.find(item => item.id === id);
+            
+            if (panelToRemove && panelToRemove.type === 'panel') {
+                // Supprimer le panneau ET tous ses composants associés
+                itemQueue = itemQueue.filter(item => {
+                    // Garder uniquement les items qui ne sont pas :
+                    // - le panneau lui-même
+                    // - les composants liés à ce panneau
+                    return item.id !== id && item.parentBarcode !== panelToRemove.barcode;
+                });
+                
+                showMessage('Panneau et composants supprimés de la liste', 'success');
+            } else {
+                // Supprimer un item simple (ne devrait pas arriver avec les composants)
+                itemQueue = itemQueue.filter(item => item.id !== id);
+                showMessage('Article supprimé de la liste', 'success');
+            }
+            
             saveQueue();
             updateQueueDisplay();
-            showMessage('Article supprimé de la liste', 'success');
         };
         
         // Vider la file d'attente
         clearQueueBtn.addEventListener('click', () => {
-            if (confirm(`Êtes-vous sûr de vouloir supprimer les ${itemQueue.length} article(s) ?`)) {
+            const panelCount = itemQueue.filter(item => item.type === 'panel').length;
+            if (confirm(`Êtes-vous sûr de vouloir supprimer les ${panelCount} panneau(x) et leurs composants ?`)) {
                 itemQueue = [];
                 saveQueue();
                 updateQueueDisplay();
@@ -1724,68 +1918,91 @@
             // Construire le scannedBy au format: Mouv_PERID_DATE_TYPE
             const scannedByValue = `Mouv_${peridInput.value.trim()}_${formattedDate}_${formattedOperationType}`;
             
-            const batchData = {
-                // Type d'opération
-                operationType: operationType,
-                operationLabel: config.label,
-                
-                // Informations de session (toujours des strings, jamais null)
-                perid: peridInput.value.trim(),
-                pitid: pitidInput.value.trim() || "",
-                address: addressInput.value.trim() || "",
-                initialComments: initialCommentsInput.value.trim() || "",
-                
-                // Données des scans
-                items: itemQueue.map(item => ({
-                    barcode: item.barcode,
-                    quantity: parseInt(item.quantity), // Forcer en integer
-                    notes: item.notes || "",
-                    timestamp: item.timestamp
-                })),
-                
-                // Métadonnées
-                totalItems: parseInt(itemQueue.length),
-                batchTimestamp: new Date().toISOString(),
-                scannedBy: scannedByValue
-            };
+            // Compteurs pour le suivi
+            let successCount = 0;
+            let errorCount = 0;
+            const totalItems = itemQueue.length;
             
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(batchData)
-                });
-                
-                // Lire la réponse une seule fois
-                const contentType = response.headers.get('content-type');
-                let responseData;
-                
-                if (contentType && contentType.includes('application/json')) {
-                    responseData = await response.json();
-                } else {
-                    responseData = await response.text();
+                // Envoyer CHAQUE item séparément vers SharePoint
+                for (let i = 0; i < itemQueue.length; i++) {
+                    const item = itemQueue[i];
+                    
+                    // Mettre à jour le message de progression
+                    sendAllBtn.innerHTML = `<span class="spinner"></span>Envoi ${i + 1}/${totalItems}...`;
+                    
+                    // Construire les données pour cet item spécifique
+                    const itemData = {
+                        // Type d'opération
+                        operationType: operationType,
+                        operationLabel: config.label,
+                        
+                        // Informations de session (toujours des strings, jamais null)
+                        perid: peridInput.value.trim(),
+                        pitid: pitidInput.value.trim() || "",
+                        address: addressInput.value.trim() || "",
+                        initialComments: initialCommentsInput.value.trim() || "",
+                        
+                        // Données de CET item (UN SEUL ITEM PAR REQUÊTE)
+                        items: [{
+                            barcode: item.barcode,
+                            quantity: parseInt(item.quantity),
+                            notes: item.notes || "",
+                            timestamp: item.timestamp,
+                            type: item.type || 'panel', // 'panel' ou 'component'
+                            parentBarcode: item.parentBarcode || ""
+                        }],
+                        
+                        // Métadonnées
+                        totalItems: 1, // Toujours 1 car on envoie item par item
+                        batchTimestamp: new Date().toISOString(),
+                        scannedBy: scannedByValue,
+                        itemIndex: i + 1, // Index de cet item dans le batch complet
+                        totalBatchItems: totalItems // Nombre total d'items dans le batch complet
+                    };
+                    
+                    try {
+                        const response = await fetch(WEBHOOK_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(itemData)
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                            console.error(`Erreur envoi item ${i + 1}:`, await response.text());
+                        }
+                        
+                    } catch (itemError) {
+                        errorCount++;
+                        console.error(`Erreur envoi item ${i + 1}:`, itemError);
+                    }
+                    
+                    // Petite pause entre les envois pour éviter de surcharger le serveur
+                    if (i < itemQueue.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
                 }
                 
-                if (response.ok) {
-                    showMessage(`✓ ${itemQueue.length} article(s) envoyé(s) vers SharePoint avec succès!`, 'success');
+                // Afficher le résultat final
+                if (errorCount === 0) {
+                    showMessage(`✓ ${successCount} ligne(s) envoyée(s) vers SharePoint avec succès!`, 'success');
                     
                     // Vider la file d'attente après envoi réussi
                     itemQueue = [];
                     saveQueue();
                     updateQueueDisplay();
-                    
-                    // Réactiver le bouton
-                    sendAllBtn.disabled = false;
-                    sendAllBtn.innerHTML = '🚀 Tout envoyer à SharePoint';
                 } else {
-                    // Afficher l'erreur détaillée
-                    const errorMsg = typeof responseData === 'object' && responseData.error ? 
-                        `${responseData.error.code}: ${responseData.error.message}` : 
-                        responseData;
-                    throw new Error(`Erreur HTTP ${response.status}: ${errorMsg}`);
+                    showMessage(`⚠️ Envoi partiel: ${successCount} réussi(s), ${errorCount} échec(s)`, 'warning');
                 }
+                
+                // Réactiver le bouton
+                sendAllBtn.disabled = false;
+                sendAllBtn.innerHTML = '🚀 Tout envoyer et clôturer';
                 
             } catch (error) {
                 console.error('Erreur d\'envoi complète:', error);
@@ -1796,6 +2013,19 @@
                 if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
                     errorMessage += '❌ Erreur CORS détectée.\n\n';
                     errorMessage += 'Solutions possibles:\n';
+                    errorMessage += '1. Vérifiez que le workflow Power Automate est activé\n';
+                    errorMessage += '2. Vérifiez que l\'authentification est sur "N\'importe qui"\n';
+                    errorMessage += '3. Essayez de désactiver/réactiver le workflow\n\n';
+                    errorMessage += 'Détails technique: ' + error.message;
+                } else {
+                    errorMessage += '📄 Détails: ' + error.message;
+                }
+                
+                showMessage(errorMessage, 'error');
+                sendAllBtn.disabled = false;
+                sendAllBtn.innerHTML = '🚀 Tout envoyer et clôturer';
+            }
+        });
                     errorMessage += '1. Vérifiez que le workflow Power Automate est activé\n';
                     errorMessage += '2. Vérifiez que l\'authentification est sur "N\'importe qui"\n';
                     errorMessage += '3. Essayez de désactiver/réactiver le workflow\n\n';

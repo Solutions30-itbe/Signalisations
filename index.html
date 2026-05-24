@@ -1942,6 +1942,11 @@
             let errorCount = 0;
             const totalItems = itemQueue.length;
             
+            // Déterminer la présence de chaque composant dans la queue
+            const hasBigFoot = itemQueue.some(item => item.barcode === 'Big Foot');
+            const hasMiniFoot = itemQueue.some(item => item.barcode === 'Mini Foot');
+            const hasPoteau = itemQueue.some(item => item.barcode === 'Poteau aluminium');
+            
             try {
                 // Envoyer CHAQUE item séparément vers SharePoint
                 for (let i = 0; i < itemQueue.length; i++) {
@@ -1971,6 +1976,11 @@
                             type: item.type || 'panel',
                             parentBarcode: item.parentBarcode || ""
                         }],
+                        
+                        // Booléens de présence des composants
+                        hasBigFoot: hasBigFoot,
+                        hasMiniFoot: hasMiniFoot,
+                        hasPoteau: hasPoteau,
                         
                         // Métadonnées
                         totalItems: 1,

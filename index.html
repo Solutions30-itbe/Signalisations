@@ -332,7 +332,7 @@
         
         .support-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
         
@@ -769,18 +769,22 @@
             <!-- Résultat du scan actuel -->
             <div id="scanResultZone"></div>
             
-            <!-- Choix du support (Big Foot / Mini Foot) -->
+            <!-- Choix du support (Big Foot / Mini Foot / Rien) -->
             <div id="supportChoiceSection" style="display: none;">
                 <div class="support-choice">
                     <div class="support-choice-title">Quel type de support ?</div>
                     <div class="support-buttons">
                         <button class="support-btn" id="bigFootBtn">
-                            <div class="support-icon">🦶</div>
+                            <div class="support-icon">⬛ L</div>
                             <div class="support-label">Big Foot</div>
                         </button>
                         <button class="support-btn" id="miniFootBtn">
-                            <div class="support-icon">👣</div>
+                            <div class="support-icon">◾ S</div>
                             <div class="support-label">Mini Foot</div>
+                        </button>
+                        <button class="support-btn" id="noSupportBtn">
+                            <div class="support-icon">⭕</div>
+                            <div class="support-label">Rien</div>
                         </button>
                     </div>
                 </div>
@@ -889,6 +893,7 @@
         const supportChoiceSection = document.getElementById('supportChoiceSection');
         const bigFootBtn = document.getElementById('bigFootBtn');
         const miniFootBtn = document.getElementById('miniFootBtn');
+        const noSupportBtn = document.getElementById('noSupportBtn');
         const formSection = document.getElementById('formSection');
         const barcodeInput = document.getElementById('barcodeInput');
         const quantityInput = document.getElementById('quantityInput');
@@ -1655,6 +1660,7 @@
             // Réinitialiser les styles des boutons
             bigFootBtn.classList.remove('selected');
             miniFootBtn.classList.remove('selected');
+            noSupportBtn.classList.remove('selected');
             
             showMessage('✓ Code-barres scanné! Choisissez le type de support.', 'success');
         }
@@ -1669,6 +1675,7 @@
             selectedSupport = 'Big Foot';
             bigFootBtn.classList.add('selected');
             miniFootBtn.classList.remove('selected');
+            noSupportBtn.classList.remove('selected');
             
             // Afficher le formulaire après sélection
             supportChoiceSection.style.display = 'none';
@@ -1681,12 +1688,26 @@
             selectedSupport = 'Mini Foot';
             miniFootBtn.classList.add('selected');
             bigFootBtn.classList.remove('selected');
+            noSupportBtn.classList.remove('selected');
             
             // Afficher le formulaire après sélection
             supportChoiceSection.style.display = 'none';
             formSection.style.display = 'block';
             
             showMessage('✓ Mini Foot sélectionné. Ajoutez des notes si nécessaire.', 'success');
+        });
+        
+        noSupportBtn.addEventListener('click', () => {
+            selectedSupport = 'Rien';
+            noSupportBtn.classList.add('selected');
+            bigFootBtn.classList.remove('selected');
+            miniFootBtn.classList.remove('selected');
+            
+            // Afficher le formulaire après sélection
+            supportChoiceSection.style.display = 'none';
+            formSection.style.display = 'block';
+            
+            showMessage('✓ Aucun support. Ajoutez des notes si nécessaire.', 'success');
         });
         
         // Ajouter à la file d'attente
@@ -1697,15 +1718,13 @@
             }
             
             if (!selectedSupport) {
-                showMessage('❌ Veuillez sélectionner le type de support (Big Foot ou Mini Foot)', 'error');
+                showMessage('❌ Veuillez sélectionner le type de support', 'error');
                 return;
             }
             
             const timestamp = new Date().toISOString();
             const panelBarcode = barcodeInput.value;
             const baseId = Date.now();
-            
-            // Créer 3 items séparés pour SharePoint
             
             // Item 1: Le panneau (code-barres scanné)
             const panelItem = {
@@ -1728,21 +1747,23 @@
                 parentBarcode: panelBarcode
             };
             
-            // Item 3: Big Foot ou Mini Foot (composant)
-            const supportItem = {
-                id: baseId + 2,
-                type: 'component',
-                barcode: selectedSupport,
-                quantity: 1,
-                notes: '',
-                timestamp: timestamp,
-                parentBarcode: panelBarcode
-            };
-            
-            // Ajouter les 3 items à la file d'attente
+            // Ajouter le panneau et le poteau
             itemQueue.push(panelItem);
             itemQueue.push(poleItem);
-            itemQueue.push(supportItem);
+            
+            // Item 3: Big Foot ou Mini Foot (composant) - SEULEMENT si pas "Rien"
+            if (selectedSupport !== 'Rien') {
+                const supportItem = {
+                    id: baseId + 2,
+                    type: 'component',
+                    barcode: selectedSupport,
+                    quantity: 1,
+                    notes: '',
+                    timestamp: timestamp,
+                    parentBarcode: panelBarcode
+                };
+                itemQueue.push(supportItem);
+            }
             
             saveQueue();
             updateQueueDisplay();

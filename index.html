@@ -23,110 +23,100 @@
             --error: #EF4444;
             --warning: #F59E0B;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px), linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
-        .container { position: relative; max-width: 600px; margin: 0 auto; padding: 20px; z-index: 1; }
-        header { text-align: center; margin-bottom: 30px; padding: 30px 0; animation: slideDown 0.6s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .logo { max-width: 200px; height: auto; margin-bottom: 20px; filter: brightness(1.1); }
-        h1 { font-family: 'Space Mono', monospace; font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; background: linear-gradient(135deg, var(--accent) 0%, #FB923C 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .subtitle { font-size: 0.95rem; color: var(--text-secondary); font-weight: 400; }
-        .card { background: var(--bg-secondary); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); border: 1px solid var(--border); animation: fadeInUp 0.6s ease-out 0.2s both; margin-bottom: 20px; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        #reader { border-radius: 12px; overflow: hidden; border: 2px solid var(--border); background: var(--bg-card); margin-bottom: 20px; }
-        #reader video { border-radius: 10px; }
-        .btn { width: 100%; padding: 16px; font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.05em; position: relative; overflow: hidden; }
-        .btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.1); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
-        .btn:active::before { width: 300px; height: 300px; }
-        .btn-primary { background: var(--accent); color: var(--bg-primary); box-shadow: 0 4px 20px rgba(249,115,22,0.3); }
-        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 25px rgba(249,115,22,0.4); }
-        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 2px solid var(--border); margin-top: 12px; }
-        .btn-secondary:hover:not(:disabled) { background: var(--border); transform: translateY(-2px); }
-        .btn-danger { background: var(--error); color: white; box-shadow: 0 4px 20px rgba(239,68,68,0.3); }
-        .btn-danger:hover:not(:disabled) { background: #DC2626; transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .operation-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .operation-type-btn { background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 24px 16px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 12px; font-family: 'IBM Plex Sans', sans-serif; }
-        .operation-type-btn:hover { background: var(--border); border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(249,115,22,0.2); }
-        .operation-icon { font-size: 3rem; line-height: 1; }
-        .operation-label { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; }
-        .btn-link { font-family: 'IBM Plex Sans', sans-serif; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 8px; }
-        input, textarea, select { width: 100%; padding: 14px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 10px; color: var(--text-primary); font-family: 'IBM Plex Sans', sans-serif; font-size: 1rem; transition: all 0.3s ease; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249,115,22,0.1); }
-        textarea { resize: vertical; min-height: 80px; font-family: 'IBM Plex Sans', sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
+        body::before { content:''; position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(90deg,rgba(249,115,22,.03) 1px,transparent 1px),linear-gradient(rgba(249,115,22,.03) 1px,transparent 1px); background-size:50px 50px; pointer-events:none; z-index:0; }
+        .container { position:relative; max-width:600px; margin:0 auto; padding:20px; z-index:1; }
+        header { text-align:center; margin-bottom:30px; padding:30px 0; animation:slideDown .6s ease-out; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+        .logo { max-width:200px; height:auto; margin-bottom:20px; filter:brightness(1.1); }
+        h1 { font-family:'Space Mono',monospace; font-size:2rem; font-weight:700; letter-spacing:-.02em; margin-bottom:10px; background:linear-gradient(135deg,var(--accent) 0%,#FB923C 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .subtitle { font-size:.95rem; color:var(--text-secondary); }
+        .card { background:var(--bg-secondary); border-radius:16px; padding:24px; box-shadow:0 10px 40px rgba(0,0,0,.3); border:1px solid var(--border); animation:fadeInUp .6s ease-out .2s both; margin-bottom:20px; }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        #reader { border-radius:12px; overflow:hidden; border:2px solid var(--border); background:var(--bg-card); margin-bottom:20px; }
+        .btn { width:100%; padding:16px; font-family:'Space Mono',monospace; font-size:.95rem; font-weight:700; border:none; border-radius:12px; cursor:pointer; transition:all .3s ease; text-transform:uppercase; letter-spacing:.05em; position:relative; overflow:hidden; }
+        .btn-primary { background:var(--accent); color:var(--bg-primary); box-shadow:0 4px 20px rgba(249,115,22,.3); }
+        .btn-primary:hover:not(:disabled) { background:var(--accent-hover); transform:translateY(-2px); }
+        .btn-secondary { background:var(--bg-card); color:var(--text-primary); border:2px solid var(--border); margin-top:12px; }
+        .btn-secondary:hover:not(:disabled) { background:var(--border); transform:translateY(-2px); }
+        .btn-danger { background:var(--error); color:white; }
+        .btn-danger:hover:not(:disabled) { background:#DC2626; transform:translateY(-2px); }
+        .btn:disabled { opacity:.5; cursor:not-allowed; }
+        .btn-link { font-family:'IBM Plex Sans',sans-serif; }
+        .operation-type-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+        .operation-type-btn { background:var(--bg-card); border:2px solid var(--border); border-radius:12px; padding:24px 16px; cursor:pointer; transition:all .3s ease; display:flex; flex-direction:column; align-items:center; gap:12px; font-family:'IBM Plex Sans',sans-serif; }
+        .operation-type-btn:hover { background:var(--border); border-color:var(--accent); transform:translateY(-4px); box-shadow:0 8px 20px rgba(249,115,22,.2); }
+        .operation-icon { font-size:3rem; line-height:1; }
+        .operation-label { font-size:.95rem; font-weight:600; color:var(--text-primary); text-align:center; line-height:1.3; }
+        .form-group { margin-bottom:20px; }
+        label { display:block; font-family:'Space Mono',monospace; font-size:.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); margin-bottom:8px; }
+        input, textarea { width:100%; padding:14px; background:var(--bg-card); border:2px solid var(--border); border-radius:10px; color:var(--text-primary); font-family:'IBM Plex Sans',sans-serif; font-size:1rem; transition:all .3s ease; }
+        input:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+        textarea { resize:vertical; min-height:80px; }
 
-        /* ─── NOUVEAU : Configuration des composants ─── */
-        .support-choice { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 12px; padding: 18px; margin-bottom: 20px; animation: fadeInUp 0.3s ease-out; }
-        .support-choice-title { font-family: 'Space Mono', monospace; font-size: 0.9rem; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; text-align: center; letter-spacing: 0.05em; }
+        /* ── Boîte de choix composants ── */
+        .choice-box { background:var(--bg-card); border:2px solid var(--accent); border-radius:12px; padding:18px; margin-bottom:16px; animation:fadeInUp .3s ease-out; }
+        .choice-box-title { font-family:'Space Mono',monospace; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); margin-bottom:12px; }
 
-        .component-row { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-        .component-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .component-row-header { display: flex; align-items: center; margin-bottom: 8px; }
-        .component-row-name { font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); flex: 1; }
-        .component-row-status { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); transition: all 0.2s ease; }
-        .component-row-status.active { color: var(--accent); }
-        .component-row-status.inactive { color: var(--error); }
+        /* Support : 3 boutons */
+        .support-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+        .support-btn { background:var(--bg-secondary); border:2px solid var(--border); border-radius:10px; padding:14px 8px; cursor:pointer; transition:all .25s ease; display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'IBM Plex Sans',sans-serif; color:var(--text-primary); }
+        .support-btn:hover { border-color:var(--accent); transform:translateY(-2px); }
+        .support-btn.selected { background:var(--accent); border-color:var(--accent); color:var(--bg-primary); }
+        .support-icon { font-size:1.5rem; line-height:1; }
+        .support-label { font-size:.82rem; font-weight:700; }
 
-        .action-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .action-btn {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 2px;
-            cursor: pointer;
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            text-align: center;
-            line-height: 1.2;
-        }
-        .action-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateY(-1px); }
-        .action-btn.sel-action { background: var(--accent); border-color: var(--accent); color: var(--bg-primary); font-weight: 700; }
-        .action-btn.sel-non { background: rgba(239,68,68,0.15); border-color: var(--error); color: var(--error); font-weight: 700; }
+        /* Poteau : 2 boutons */
+        .poteau-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .poteau-btn { background:var(--bg-secondary); border:2px solid var(--border); border-radius:10px; padding:14px 8px; cursor:pointer; transition:all .25s ease; display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'IBM Plex Sans',sans-serif; color:var(--text-primary); }
+        .poteau-btn:hover { border-color:var(--accent); transform:translateY(-2px); }
+        .poteau-btn.selected-yes  { background:var(--accent); border-color:var(--accent); color:var(--bg-primary); }
+        .poteau-btn.selected-no   { background:rgba(239,68,68,.15); border-color:var(--error); color:var(--error); }
+        .poteau-icon { font-size:1.5rem; line-height:1; }
+        .poteau-label { font-size:.82rem; font-weight:700; }
 
-        .confirm-components-btn { display: none; width: 100%; margin-top: 16px; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 12px; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.05em; }
-        .confirm-components-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        /* Bouton confirmer */
+        .btn-confirm { display:none; width:100%; margin-top:14px; padding:14px; background:var(--accent); color:var(--bg-primary); border:none; border-radius:12px; font-family:'Space Mono',monospace; font-weight:700; font-size:.9rem; cursor:pointer; transition:all .3s ease; text-transform:uppercase; letter-spacing:.05em; }
+        .btn-confirm:hover { background:var(--accent-hover); transform:translateY(-2px); }
 
-        /* ─── Zone de message ─── */
-        .message-zone { margin-top: 20px; }
-        .message { padding: 16px; border-radius: 12px; font-weight: 500; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .message-success { background: rgba(249,115,22,0.15); border: 1px solid var(--accent); color: var(--accent); }
-        .message-error { background: rgba(239,68,68,0.15); border: 1px solid var(--error); color: var(--error); }
-        .message-warning { background: rgba(245,158,11,0.15); border: 1px solid var(--warning); color: var(--warning); }
-        .scan-result { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 12px; padding: 16px; margin-bottom: 20px; animation: pulse 0.5s ease-out; }
-        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-        .scan-result-label { font-family: 'Space Mono', monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
-        .scan-result-value { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); word-break: break-all; }
-        .status { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
-        .status-ready { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-        .status-scanning { background: var(--warning); box-shadow: 0 0 10px var(--warning); animation: blink 1s infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .queue-section { margin-top: 20px; }
-        .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .queue-title { font-family: 'Space Mono', monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); }
-        .queue-count { background: var(--accent); color: var(--bg-primary); padding: 6px 12px; border-radius: 20px; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; }
-        .queue-list { display: flex; flex-direction: column; gap: 12px; }
-        .queue-item { background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 16px; animation: slideIn 0.3s ease-out; }
-        .queue-item.component { border-left: 4px solid var(--warning); padding-left: 20px; background: rgba(245,158,11,0.05); }
-        .queue-item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
-        .queue-item-barcode { font-family: 'Space Mono', monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); word-break: break-all; flex: 1; margin-right: 12px; }
-        .queue-item-remove { background: var(--error); color: white; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0; }
-        .queue-item-remove:hover { background: #DC2626; transform: scale(1.1); }
-        .queue-item-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 0.9rem; }
-        .queue-item-detail { display: flex; flex-direction: column; }
-        .queue-item-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
-        .queue-item-value { color: var(--text-primary); font-weight: 500; }
-        .queue-empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-style: italic; }
-        .queue-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-        @media (max-width: 480px) { h1 { font-size: 1.6rem; } .operation-type-grid { grid-template-columns: 1fr; } .queue-item-details { grid-template-columns: 1fr; } }
+        /* Messages */
+        .message-zone { margin-top:20px; }
+        .message { padding:16px; border-radius:12px; font-weight:500; animation:slideIn .3s ease-out; }
+        @keyframes slideIn { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+        .message-success { background:rgba(249,115,22,.15); border:1px solid var(--accent); color:var(--accent); }
+        .message-error   { background:rgba(239,68,68,.15);  border:1px solid var(--error);  color:var(--error); }
+        .message-warning { background:rgba(245,158,11,.15); border:1px solid var(--warning); color:var(--warning); }
+        .scan-result { background:var(--bg-card); border:2px solid var(--accent); border-radius:12px; padding:16px; margin-bottom:16px; animation:pulse .5s ease-out; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+        .scan-result-label { font-family:'Space Mono',monospace; font-size:.8rem; text-transform:uppercase; color:var(--text-secondary); margin-bottom:6px; }
+        .scan-result-value { font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700; color:var(--accent); word-break:break-all; }
+        .status { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px; }
+        .status-ready    { background:var(--accent); box-shadow:0 0 10px var(--accent); }
+        .status-scanning { background:var(--warning); box-shadow:0 0 10px var(--warning); animation:blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+        .spinner { display:inline-block; width:16px; height:16px; border:3px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .8s linear infinite; margin-right:8px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        /* Queue */
+        .queue-section { margin-top:20px; }
+        .queue-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .queue-title { font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--accent); }
+        .queue-count { background:var(--accent); color:var(--bg-primary); padding:6px 12px; border-radius:20px; font-family:'Space Mono',monospace; font-size:.85rem; font-weight:700; }
+        .queue-list { display:flex; flex-direction:column; gap:10px; }
+        .queue-item { background:var(--bg-card); border:2px solid var(--border); border-radius:12px; padding:14px; animation:slideIn .3s ease-out; }
+        .queue-item.component { border-left:4px solid var(--warning); padding-left:18px; background:rgba(245,158,11,.04); }
+        .queue-item-header { display:flex; justify-content:space-between; align-items:start; margin-bottom:10px; }
+        .queue-item-barcode { font-family:'Space Mono',monospace; font-size:1rem; font-weight:700; color:var(--accent); word-break:break-all; flex:1; margin-right:10px; }
+        .queue-item-remove { background:var(--error); color:white; border:none; width:30px; height:30px; border-radius:7px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; }
+        .queue-item-remove:hover { background:#DC2626; transform:scale(1.1); }
+        .queue-item-details { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; font-size:.88rem; }
+        .queue-item-detail { display:flex; flex-direction:column; }
+        .queue-item-label { font-family:'Space Mono',monospace; font-size:.72rem; text-transform:uppercase; color:var(--text-secondary); margin-bottom:3px; }
+        .queue-item-value { color:var(--text-primary); font-weight:500; }
+        .queue-empty { text-align:center; padding:40px 20px; color:var(--text-secondary); font-style:italic; }
+        .queue-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+        @media(max-width:480px){ h1{font-size:1.6rem} .operation-type-grid{grid-template-columns:1fr} .queue-item-details{grid-template-columns:1fr} }
     </style>
 </head>
 <body>
@@ -141,13 +131,13 @@
     <div class="card" id="loginSection">
         <h2 style="font-family:'Space Mono',monospace;font-size:1.2rem;color:var(--accent);margin-bottom:20px;text-align:center;">Identification</h2>
         <div class="form-group">
-            <label for="loginPeridInput">PER ID (Technicien) - 6 chiffres</label>
-            <input type="text" id="loginPeridInput" placeholder="Ex: 835967" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" required autofocus>
-            <small style="color:var(--text-secondary);font-size:0.85rem;display:block;margin-top:4px;">6 chiffres • Pas de répétitions sauf 888888 et 666666 • Pas de séquences</small>
+            <label for="loginPeridInput">PER ID — 6 chiffres</label>
+            <input type="text" id="loginPeridInput" placeholder="Ex: 835967" maxlength="6" inputmode="numeric" autofocus>
+            <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Pas de répétitions (sauf 888888 / 666666) • Pas de séquences</small>
         </div>
         <div class="form-group">
             <label for="loginPasswordInput">Mot de passe</label>
-            <input type="password" id="loginPasswordInput" placeholder="Entrez votre mot de passe" required autocomplete="off">
+            <input type="password" id="loginPasswordInput" placeholder="Entrez votre mot de passe" autocomplete="off">
         </div>
         <button id="loginBtn" class="btn btn-primary">✓ Se connecter</button>
     </div>
@@ -158,28 +148,28 @@
     <!-- FORMULAIRE SESSION -->
     <div class="card" id="sessionFormSection" style="display:none;">
         <div style="background:var(--bg-card);padding:12px;border-radius:8px;margin-bottom:20px;text-align:center;">
-            <span style="color:var(--text-secondary);font-size:0.85rem;">Type d'opération :</span>
+            <span style="color:var(--text-secondary);font-size:.85rem;">Type d'opération :</span>
             <strong id="selectedOperationType" style="color:var(--accent);font-family:'Space Mono',monospace;margin-left:8px;"></strong>
-            <button id="changeOperationBtn" class="btn-link" style="margin-left:12px;color:var(--accent);background:none;border:none;cursor:pointer;text-decoration:underline;font-size:0.85rem;">Changer</button>
+            <button id="changeOperationBtn" class="btn-link" style="margin-left:12px;color:var(--accent);background:none;border:none;cursor:pointer;text-decoration:underline;font-size:.85rem;">Changer</button>
         </div>
         <div class="form-group">
-            <label for="peridInput">PER ID (Technicien) - 6 chiffres</label>
-            <input type="text" id="peridInput" placeholder="Ex: 835967" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" required>
-            <small style="color:var(--text-secondary);font-size:0.85rem;display:block;margin-top:4px;">6 chiffres • Pas de répétitions sauf 888888 et 666666 • Pas de séquences</small>
+            <label for="peridInput">PER ID — 6 chiffres</label>
+            <input type="text" id="peridInput" placeholder="Ex: 835967" maxlength="6" inputmode="numeric">
+            <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Pas de répétitions (sauf 888888 / 666666) • Pas de séquences</small>
         </div>
         <div class="form-group" id="pitidGroup" style="display:none;">
-            <label for="pitidInput">PIT ID (Projet) - 7 chiffres</label>
-            <input type="text" id="pitidInput" placeholder="Ex: 1234567" pattern="[0-9]{7}" maxlength="7" inputmode="numeric">
-            <small style="color:var(--text-secondary);font-size:0.85rem;display:block;margin-top:4px;">7 chiffres • Pas de répétitions • Pas de séquences</small>
+            <label for="pitidInput">PIT ID — 7 chiffres</label>
+            <input type="text" id="pitidInput" placeholder="Ex: 1234567" maxlength="7" inputmode="numeric">
+            <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Pas de répétitions • Pas de séquences</small>
         </div>
         <div class="form-group" id="addressGroup" style="display:none;">
             <label for="addressInput" id="addressLabel">Adresse</label>
-            <textarea id="addressInput" placeholder="Adresse du chantier..." rows="2" required minlength="10"></textarea>
-            <small style="color:var(--text-secondary);font-size:0.85rem;display:block;margin-top:4px;">Obligatoire • Minimum 10 caractères</small>
+            <textarea id="addressInput" placeholder="Adresse du chantier..." rows="2" minlength="10"></textarea>
+            <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Minimum 10 caractères</small>
         </div>
         <div class="form-group">
             <label for="initialCommentsInput">Commentaires initiaux (optionnel)</label>
-            <textarea id="initialCommentsInput" placeholder="Commentaires généraux pour ce mouvement..."></textarea>
+            <textarea id="initialCommentsInput" placeholder="Commentaires généraux..."></textarea>
         </div>
         <button id="startScanningBtn" class="btn btn-primary">✓ Valider et commencer</button>
     </div>
@@ -191,58 +181,49 @@
         </div>
         <div id="reader"></div>
         <button id="scanBtn" class="btn btn-primary"><span class="status status-ready"></span>Démarrer le scan</button>
-        <button id="stopBtn" class="btn btn-danger" style="display:none;"><span class="status status-scanning"></span>Arrêter le scan</button>
+        <button id="stopBtn" class="btn btn-danger" style="display:none;margin-top:0;"><span class="status status-scanning"></span>Arrêter le scan</button>
+
         <div id="scanResultZone"></div>
 
-        <!-- ─── CHOIX DES COMPOSANTS (nouveau) ─── -->
+        <!-- ── CHOIX COMPOSANTS ── -->
         <div id="supportChoiceSection" style="display:none;">
-            <div class="support-choice">
-                <div class="support-choice-title">⚙️ Configuration des composants</div>
 
-                <!-- Big Foot -->
-                <div class="component-row">
-                    <div class="component-row-header">
-                        <span class="component-row-name">⬛ Big Foot</span>
-                        <span class="component-row-status" id="bigFootStatus">—</span>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="action-btn" data-comp="bigFoot" data-action="donner">🎁 Donner</button>
-                        <button class="action-btn" data-comp="bigFoot" data-action="placer">🏗️ Placer</button>
-                        <button class="action-btn" data-comp="bigFoot" data-action="récupérer">🔄 Récupérer</button>
-                        <button class="action-btn" data-comp="bigFoot" data-action="non">✕ Non</button>
-                    </div>
+            <!-- 1. Type de support -->
+            <div class="choice-box">
+                <div class="choice-box-title">Type de support</div>
+                <div class="support-grid">
+                    <button class="support-btn" id="bigFootBtn">
+                        <div class="support-icon">⬛ L</div>
+                        <div class="support-label">Big Foot</div>
+                    </button>
+                    <button class="support-btn" id="miniFootBtn">
+                        <div class="support-icon">◾ S</div>
+                        <div class="support-label">Mini Foot</div>
+                    </button>
+                    <button class="support-btn" id="noSupportBtn">
+                        <div class="support-icon">⭕</div>
+                        <div class="support-label">Rien</div>
+                    </button>
                 </div>
-
-                <!-- Mini Foot -->
-                <div class="component-row">
-                    <div class="component-row-header">
-                        <span class="component-row-name">◾ Mini Foot</span>
-                        <span class="component-row-status" id="miniFootStatus">—</span>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="action-btn" data-comp="miniFoot" data-action="donner">🎁 Donner</button>
-                        <button class="action-btn" data-comp="miniFoot" data-action="placer">🏗️ Placer</button>
-                        <button class="action-btn" data-comp="miniFoot" data-action="récupérer">🔄 Récupérer</button>
-                        <button class="action-btn" data-comp="miniFoot" data-action="non">✕ Non</button>
-                    </div>
-                </div>
-
-                <!-- Poteau -->
-                <div class="component-row">
-                    <div class="component-row-header">
-                        <span class="component-row-name">🔩 Poteau alu</span>
-                        <span class="component-row-status" id="poteauStatus">—</span>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="action-btn" data-comp="poteau" data-action="donner">🎁 Donner</button>
-                        <button class="action-btn" data-comp="poteau" data-action="placer">🏗️ Placer</button>
-                        <button class="action-btn" data-comp="poteau" data-action="récupérer">🔄 Récupérer</button>
-                        <button class="action-btn" data-comp="poteau" data-action="non">✕ Non</button>
-                    </div>
-                </div>
-
-                <button id="confirmComponentsBtn" class="confirm-components-btn">✓ Confirmer et ajouter des notes</button>
             </div>
+
+            <!-- 2. Poteau -->
+            <div class="choice-box">
+                <div class="choice-box-title">Poteau aluminium</div>
+                <div class="poteau-grid">
+                    <button class="poteau-btn" id="poteauOuiBtn">
+                        <div class="poteau-icon">✅</div>
+                        <div class="poteau-label">Oui</div>
+                    </button>
+                    <button class="poteau-btn" id="poteauNonBtn">
+                        <div class="poteau-icon">❌</div>
+                        <div class="poteau-label">Non</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bouton confirmer (visible quand les 2 choix sont faits) -->
+            <button id="confirmChoicesBtn" class="btn-confirm">✓ Confirmer et ajouter des notes</button>
         </div>
 
         <!-- FORMULAIRE ARTICLE -->
@@ -275,7 +256,7 @@
             <button id="sendAllBtn" class="btn btn-primary">🚀 Tout envoyer et clôturer</button>
             <button id="clearQueueBtn" class="btn btn-secondary">🗑️ Vider la liste</button>
         </div>
-        <button id="testConnectionBtn" class="btn btn-secondary" style="margin-top:12px;font-size:0.85rem;">🔌 Tester la connexion Power Automate</button>
+        <button id="testConnectionBtn" class="btn btn-secondary" style="margin-top:12px;font-size:.85rem;">🔌 Tester la connexion Power Automate</button>
     </div>
 
     <div class="message-zone" id="messageZone"></div>
@@ -283,119 +264,113 @@
 
 <script>
     const WEBHOOK_URL = 'https://default2fe73b7aa63e4370a1eb1915e8da07.55.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b212eb456463411797b5b5f5f9edf53e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-oLm1krIbljNiqXPqTH-9e-h7tYzXmlEv2ChX0-Hhd4';
-    const AUTH_URL   = 'https://default2fe73b7aa63e4370a1eb1915e8da07.55.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/271be99d34914a1f82f68ca8bd082fd8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=F7Dh5zCuhOd_a6xYfV8f4JGNg_OO8djIF7EPwSqMSA0';
+    const AUTH_URL    = 'https://default2fe73b7aa63e4370a1eb1915e8da07.55.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/271be99d34914a1f82f68ca8bd082fd8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=F7Dh5zCuhOd_a6xYfV8f4JGNg_OO8djIF7EPwSqMSA0';
 
-    // ─── Variables globales ───
+    // ── Variables ──
     let html5QrCode, isScanning = false, scannedBarcode = '';
-    let itemQueue = [];
-    let operationType = '';
-    let currentPerid = '';
-    // Remplace selectedSupport : une action par composant
-    let componentActions = { bigFoot: null, miniFoot: null, poteau: null };
+    let itemQueue = [], operationType = '', currentPerid = '';
+    let selectedSupport = ''; // 'Big Foot' | 'Mini Foot' | 'Rien'
+    let selectedPoteau  = ''; // 'oui' | 'non'
 
-    // ─── DOM ───
-    const loginSection        = document.getElementById('loginSection');
-    const loginPeridInput     = document.getElementById('loginPeridInput');
-    const loginPasswordInput  = document.getElementById('loginPasswordInput');
-    const loginBtn            = document.getElementById('loginBtn');
-    const operationTypeSection= document.getElementById('operationTypeSection');
-    const sessionFormSection  = document.getElementById('sessionFormSection');
-    const scanningSection     = document.getElementById('scanningSection');
-    const selectedOperationType = document.getElementById('selectedOperationType');
-    const changeOperationBtn  = document.getElementById('changeOperationBtn');
-    const startScanningBtn    = document.getElementById('startScanningBtn');
-    const resetBtn            = document.getElementById('resetBtn');
-    const peridInput          = document.getElementById('peridInput');
-    const pitidInput          = document.getElementById('pitidInput');
-    const addressInput        = document.getElementById('addressInput');
-    const addressLabel        = document.getElementById('addressLabel');
-    const initialCommentsInput= document.getElementById('initialCommentsInput');
-    const pitidGroup          = document.getElementById('pitidGroup');
-    const addressGroup        = document.getElementById('addressGroup');
-    const scanBtn             = document.getElementById('scanBtn');
-    const stopBtn             = document.getElementById('stopBtn');
-    const scanResultZone      = document.getElementById('scanResultZone');
-    const supportChoiceSection= document.getElementById('supportChoiceSection');
-    const formSection         = document.getElementById('formSection');
-    const barcodeInput        = document.getElementById('barcodeInput');
-    const quantityInput       = document.getElementById('quantityInput');
-    const notesInput          = document.getElementById('notesInput');
-    const addToQueueBtn       = document.getElementById('addToQueueBtn');
-    const cancelBtn           = document.getElementById('cancelBtn');
-    const messageZone         = document.getElementById('messageZone');
-    const queueSection        = document.getElementById('queueSection');
-    const queueList           = document.getElementById('queueList');
-    const queueCount          = document.getElementById('queueCount');
-    const sendAllBtn          = document.getElementById('sendAllBtn');
-    const clearQueueBtn       = document.getElementById('clearQueueBtn');
-    const testConnectionBtn   = document.getElementById('testConnectionBtn');
-    const confirmComponentsBtn= document.getElementById('confirmComponentsBtn');
+    // ── DOM ──
+    const loginSection         = document.getElementById('loginSection');
+    const loginPeridInput      = document.getElementById('loginPeridInput');
+    const loginPasswordInput   = document.getElementById('loginPasswordInput');
+    const loginBtn             = document.getElementById('loginBtn');
+    const operationTypeSection = document.getElementById('operationTypeSection');
+    const sessionFormSection   = document.getElementById('sessionFormSection');
+    const scanningSection      = document.getElementById('scanningSection');
+    const selectedOperationType= document.getElementById('selectedOperationType');
+    const changeOperationBtn   = document.getElementById('changeOperationBtn');
+    const startScanningBtn     = document.getElementById('startScanningBtn');
+    const resetBtn             = document.getElementById('resetBtn');
+    const peridInput           = document.getElementById('peridInput');
+    const pitidInput           = document.getElementById('pitidInput');
+    const addressInput         = document.getElementById('addressInput');
+    const addressLabel         = document.getElementById('addressLabel');
+    const initialCommentsInput = document.getElementById('initialCommentsInput');
+    const pitidGroup           = document.getElementById('pitidGroup');
+    const addressGroup         = document.getElementById('addressGroup');
+    const scanBtn              = document.getElementById('scanBtn');
+    const stopBtn              = document.getElementById('stopBtn');
+    const scanResultZone       = document.getElementById('scanResultZone');
+    const supportChoiceSection = document.getElementById('supportChoiceSection');
+    const bigFootBtn           = document.getElementById('bigFootBtn');
+    const miniFootBtn          = document.getElementById('miniFootBtn');
+    const noSupportBtn         = document.getElementById('noSupportBtn');
+    const poteauOuiBtn         = document.getElementById('poteauOuiBtn');
+    const poteauNonBtn         = document.getElementById('poteauNonBtn');
+    const confirmChoicesBtn    = document.getElementById('confirmChoicesBtn');
+    const formSection          = document.getElementById('formSection');
+    const barcodeInput         = document.getElementById('barcodeInput');
+    const quantityInput        = document.getElementById('quantityInput');
+    const notesInput           = document.getElementById('notesInput');
+    const addToQueueBtn        = document.getElementById('addToQueueBtn');
+    const cancelBtn            = document.getElementById('cancelBtn');
+    const messageZone          = document.getElementById('messageZone');
+    const queueSection         = document.getElementById('queueSection');
+    const queueList            = document.getElementById('queueList');
+    const queueCount           = document.getElementById('queueCount');
+    const sendAllBtn           = document.getElementById('sendAllBtn');
+    const clearQueueBtn        = document.getElementById('clearQueueBtn');
+    const testConnectionBtn    = document.getElementById('testConnectionBtn');
 
-    // ─── CONFIGURATION DES OPÉRATIONS ───
     const operationConfig = {
-        fourniture: { label: 'Fourniture technicien',  fields: ['perid'] },
-        placement:  { label: 'Placement chantier',     fields: ['perid','pitid','address'] },
-        reprise:    { label: 'Reprise chantier',        fields: ['perid','pitid','address'] },
-        retour:     { label: 'Retour stock',            fields: ['perid'] }
+        fourniture: { label:'Fourniture technicien',  fields:['perid'] },
+        placement:  { label:'Placement chantier',     fields:['perid','pitid','address'] },
+        reprise:    { label:'Reprise chantier',        fields:['perid','pitid','address'] },
+        retour:     { label:'Retour stock',            fields:['perid'] }
     };
 
-    // ─── VALIDATION ───
+    // ── Validation ──
     function isRepeatingDigits(v){ return /^(\d)\1+$/.test(v); }
     function isSequentialDigits(v){
-        const d=v.split('').map(Number);
-        let asc=true, desc=true;
-        for(let i=1;i<d.length;i++){
-            if(d[i]!==d[i-1]+1) asc=false;
-            if(d[i]!==d[i-1]-1) desc=false;
-        }
-        return asc||desc;
+        const d=v.split('').map(Number); let a=true,b=true;
+        for(let i=1;i<d.length;i++){ if(d[i]!==d[i-1]+1)a=false; if(d[i]!==d[i-1]-1)b=false; }
+        return a||b;
     }
     function validatePerid(v){
         if(!v||v.length!==6) return {valid:false,message:'Le PER ID doit contenir exactement 6 chiffres'};
-        if(!/^\d{6}$/.test(v)) return {valid:false,message:'Le PER ID doit contenir uniquement des chiffres'};
+        if(!/^\d{6}$/.test(v)) return {valid:false,message:'Chiffres uniquement'};
         if(v==='888888'||v==='666666') return {valid:true,message:''};
-        if(isRepeatingDigits(v)) return {valid:false,message:'Le PER ID ne peut pas être une suite de chiffres identiques'};
-        if(isSequentialDigits(v)) return {valid:false,message:'Le PER ID ne peut pas être une séquence'};
+        if(isRepeatingDigits(v)) return {valid:false,message:'Pas de chiffres identiques répétés'};
+        if(isSequentialDigits(v)) return {valid:false,message:'Pas de séquences'};
         return {valid:true,message:''};
     }
     function validatePitid(v){
         if(!v||v.length!==7) return {valid:false,message:'Le PIT ID doit contenir exactement 7 chiffres'};
-        if(!/^\d{7}$/.test(v)) return {valid:false,message:'Le PIT ID doit contenir uniquement des chiffres'};
-        if(isRepeatingDigits(v)) return {valid:false,message:'Le PIT ID ne peut pas être une suite de chiffres identiques'};
-        if(isSequentialDigits(v)) return {valid:false,message:'Le PIT ID ne peut pas être une séquence'};
+        if(!/^\d{7}$/.test(v)) return {valid:false,message:'Chiffres uniquement'};
+        if(isRepeatingDigits(v)) return {valid:false,message:'Pas de chiffres identiques répétés'};
+        if(isSequentialDigits(v)) return {valid:false,message:'Pas de séquences'};
         return {valid:true,message:''};
     }
     function validateAddress(v){
-        if(!v||v.trim().length<10) return {valid:false,message:"L'adresse doit contenir au moins 10 caractères"};
+        if(!v||v.trim().length<10) return {valid:false,message:"Adresse : minimum 10 caractères"};
         return {valid:true,message:''};
     }
 
-    // ─── AFFICHER UN MESSAGE ───
-    function showMessage(text, type='success'){
-        messageZone.innerHTML = `<div class="message message-${type}">${text}</div>`;
-        if(type==='success') setTimeout(()=>{ messageZone.innerHTML=''; }, 5000);
+    function showMessage(text,type='success'){
+        messageZone.innerHTML=`<div class="message message-${type}">${text}</div>`;
+        if(type==='success') setTimeout(()=>messageZone.innerHTML='',5000);
     }
 
-    // ─── AUTHENTIFICATION ───
-    loginBtn.addEventListener('click', async () => {
-        const peridValue = loginPeridInput.value.trim();
-        const passwordValue = loginPasswordInput.value.trim();
-        const peridValidation = validatePerid(peridValue);
-        if(!peridValidation.valid){ showMessage(`❌ ${peridValidation.message}`,'error'); loginPeridInput.focus(); return; }
-        if(!passwordValue){ showMessage('❌ Veuillez entrer votre mot de passe','error'); loginPasswordInput.focus(); return; }
+    // ── CONNEXION ──
+    loginBtn.addEventListener('click', async ()=>{
+        const pv=loginPeridInput.value.trim(), pw=loginPasswordInput.value.trim();
+        const pvr=validatePerid(pv);
+        if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); loginPeridInput.focus(); return; }
+        if(!pw){ showMessage('❌ Mot de passe requis','error'); loginPasswordInput.focus(); return; }
         loginBtn.disabled=true; loginBtn.innerHTML='<span class="spinner"></span>Vérification...';
         try {
-            const response = await fetch(AUTH_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({perid:peridValue,password:passwordValue}) });
-            if(!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-            const data = await response.json();
+            const res=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({perid:pv,password:pw})});
+            if(!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data=await res.json();
             if(data.valid){
-                currentPerid = peridValue;
-                peridInput.value = peridValue;
-                saveSessionData();
+                currentPerid=pv; peridInput.value=pv; saveSessionData();
                 loginSection.style.display='none';
-                displayAvailableOperations(peridValue, data.accessLevel);
+                displayAvailableOperations(pv,data.accessLevel);
                 operationTypeSection.style.display='block';
-                showMessage(`✓ Connecté avec succès (Accès ${data.accessLevel==='full'?'complet':'technicien'})`,'success');
+                showMessage(`✓ Connecté (Accès ${data.accessLevel==='full'?'complet':'technicien'})`,'success');
             } else {
                 showMessage('❌ PERID ou mot de passe incorrect','error');
                 loginPasswordInput.focus(); loginPasswordInput.select();
@@ -403,354 +378,294 @@
         } catch(e){ showMessage('❌ Erreur de connexion. Vérifiez votre réseau.','error'); }
         loginBtn.disabled=false; loginBtn.innerHTML='✓ Se connecter';
     });
-
-    loginPeridInput.addEventListener('input', e=>{
-        e.target.value=e.target.value.replace(/\D/g,'').substring(0,6);
-        if(e.target.value.length===6){ const v=validatePerid(e.target.value); e.target.style.borderColor=v.valid?'var(--accent)':'var(--error)'; }
-        else e.target.style.borderColor=e.target.value.length>0?'var(--warning)':'var(--border)';
-    });
-    loginPeridInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){ e.preventDefault(); loginPasswordInput.focus(); } });
-    loginPasswordInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){ e.preventDefault(); loginBtn.click(); } });
+    loginPeridInput.addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').substring(0,6); });
+    loginPeridInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){e.preventDefault();loginPasswordInput.focus();} });
+    loginPasswordInput.addEventListener('keypress',e=>{ if(e.key==='Enter'){e.preventDefault();loginBtn.click();} });
 
     function logout(){
-        currentPerid='';
-        loginPeridInput.value=''; loginPasswordInput.value='';
-        operationTypeSection.style.display='none';
-        loginSection.style.display='block';
-        loginPeridInput.focus();
-        showMessage('Déconnecté','success');
+        currentPerid=''; loginPeridInput.value=''; loginPasswordInput.value='';
+        operationTypeSection.style.display='none'; loginSection.style.display='block';
+        loginPeridInput.focus(); showMessage('Déconnecté','success');
     }
 
     function displayAvailableOperations(perid, accessLevel){
-        const isFull = accessLevel==='full';
-        const ops = isFull ? ['fourniture','placement','reprise','retour'] : ['placement','reprise'];
-        const icons = { fourniture:'📦', placement:'🏗️', reprise:'🔄', retour:'⬅️' };
-        const labels = { fourniture:'Fourniture technicien', placement:'Placement chantier', reprise:'Reprise chantier', retour:'Retour stock' };
-        let btns = ops.map(op=>`<button class="operation-type-btn" data-type="${op}"><div class="operation-icon">${icons[op]}</div><div class="operation-label">${labels[op]}</div></button>`).join('');
-        const accessColor = isFull ? 'var(--accent)' : 'var(--warning)';
-        operationTypeSection.innerHTML = `
+        const isFull=accessLevel==='full';
+        const ops=isFull?['fourniture','placement','reprise','retour']:['placement','reprise'];
+        const icons={fourniture:'📦',placement:'🏗️',reprise:'🔄',retour:'⬅️'};
+        const labels={fourniture:'Fourniture technicien',placement:'Placement chantier',reprise:'Reprise chantier',retour:'Retour stock'};
+        const btns=ops.map(op=>`<button class="operation-type-btn" data-type="${op}"><div class="operation-icon">${icons[op]}</div><div class="operation-label">${labels[op]}</div></button>`).join('');
+        const ac=isFull?'var(--accent)':'var(--warning)';
+        operationTypeSection.innerHTML=`
             <h2 style="font-family:'Space Mono',monospace;font-size:1.2rem;color:var(--accent);margin-bottom:12px;text-align:center;">Type d'opération</h2>
             <div style="text-align:center;margin-bottom:16px;">
-                <span style="background:${accessColor};color:var(--bg-primary);padding:6px 12px;border-radius:20px;font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;">${isFull?'Accès complet':'Accès technicien'}</span>
-                <button id="logoutBtn" class="btn-link" style="display:block;margin:12px auto 0;color:var(--text-secondary);background:none;border:none;cursor:pointer;text-decoration:underline;font-size:0.85rem;">Se déconnecter</button>
+                <span style="background:${ac};color:var(--bg-primary);padding:6px 12px;border-radius:20px;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;">${isFull?'Accès complet':'Accès technicien'}</span>
+                <button id="logoutBtn" class="btn-link" style="display:block;margin:12px auto 0;color:var(--text-secondary);background:none;border:none;cursor:pointer;text-decoration:underline;font-size:.85rem;">Se déconnecter</button>
             </div>
             <div class="operation-type-grid">${btns}</div>`;
-        document.querySelectorAll('.operation-type-btn').forEach(btn=>btn.addEventListener('click',()=>selectOperationType(btn.dataset.type)));
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.querySelectorAll('.operation-type-btn').forEach(b=>b.addEventListener('click',()=>selectOperationType(b.dataset.type)));
+        document.getElementById('logoutBtn').addEventListener('click',logout);
     }
 
     function selectOperationType(type){
-        operationType = type;
-        const config = operationConfig[type];
-        operationTypeSection.style.display='none';
-        sessionFormSection.style.display='block';
-        selectedOperationType.textContent = config.label;
-        pitidGroup.style.display   = config.fields.includes('pitid')    ? 'block' : 'none';
-        addressGroup.style.display = config.fields.includes('address')  ? 'block' : 'none';
-        if(config.fields.includes('address')){
-            if(type==='reprise'){ addressLabel.textContent='Adresse de récupération'; addressInput.placeholder='Adresse où le matériel a été récupéré...'; }
-            else                { addressLabel.textContent='Adresse du chantier';     addressInput.placeholder='Adresse du chantier...'; }
+        operationType=type; const cfg=operationConfig[type];
+        operationTypeSection.style.display='none'; sessionFormSection.style.display='block';
+        selectedOperationType.textContent=cfg.label;
+        pitidGroup.style.display=cfg.fields.includes('pitid')?'block':'none';
+        addressGroup.style.display=cfg.fields.includes('address')?'block':'none';
+        if(cfg.fields.includes('address')){
+            addressLabel.textContent=type==='reprise'?'Adresse de récupération':'Adresse du chantier';
+            addressInput.placeholder=type==='reprise'?'Adresse où le matériel a été récupéré...':'Adresse du chantier...';
         }
-        if(!config.fields.includes('pitid'))    pitidInput.value='';
-        if(!config.fields.includes('address'))  addressInput.value='';
-        localStorage.setItem('operationType',type);
+        if(!cfg.fields.includes('pitid')) pitidInput.value='';
+        if(!cfg.fields.includes('address')) addressInput.value='';
     }
-
     changeOperationBtn.addEventListener('click',()=>{ sessionFormSection.style.display='none'; operationTypeSection.style.display='block'; operationType=''; });
 
     startScanningBtn.addEventListener('click',()=>{
-        const config = operationConfig[operationType];
-        const pv = peridInput.value.trim(); const pvr = validatePerid(pv);
+        const cfg=operationConfig[operationType];
+        const pv=peridInput.value.trim(); const pvr=validatePerid(pv);
         if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); peridInput.focus(); return; }
-        if(config.fields.includes('pitid')){ const pir=validatePitid(pitidInput.value.trim()); if(!pir.valid){ showMessage(`❌ ${pir.message}`,'error'); pitidInput.focus(); return; } }
-        if(config.fields.includes('address')){ const ar=validateAddress(addressInput.value.trim()); if(!ar.valid){ showMessage(`❌ ${ar.message}`,'error'); addressInput.focus(); return; } }
+        if(cfg.fields.includes('pitid')){ const r=validatePitid(pitidInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); pitidInput.focus(); return; } }
+        if(cfg.fields.includes('address')){ const r=validateAddress(addressInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); addressInput.focus(); return; } }
         saveSessionData();
-        sessionFormSection.style.display='none';
-        scanningSection.style.display='block';
+        sessionFormSection.style.display='none'; scanningSection.style.display='block';
         showMessage('✓ Configuration validée. Vous pouvez commencer à scanner.','success');
     });
 
-    // ─── SAUVEGARDE SESSION ───
     function saveSessionData(){
-        localStorage.setItem('perid', peridInput.value);
-        localStorage.setItem('pitid', pitidInput.value);
-        localStorage.setItem('address', addressInput.value);
-        localStorage.setItem('initialComments', initialCommentsInput.value);
-        localStorage.setItem('operationType', operationType);
+        localStorage.setItem('perid',peridInput.value); localStorage.setItem('pitid',pitidInput.value);
+        localStorage.setItem('address',addressInput.value); localStorage.setItem('initialComments',initialCommentsInput.value);
+        localStorage.setItem('operationType',operationType);
     }
-    peridInput.addEventListener('change', saveSessionData);
-    pitidInput.addEventListener('change', saveSessionData);
-    addressInput.addEventListener('change', saveSessionData);
-    initialCommentsInput.addEventListener('change', saveSessionData);
+    peridInput.addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').substring(0,6); });
+    pitidInput.addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').substring(0,7); });
 
-    peridInput.addEventListener('input', e=>{
-        e.target.value=e.target.value.replace(/\D/g,'').substring(0,6);
-        if(e.target.value.length===6){ const v=validatePerid(e.target.value); e.target.style.borderColor=v.valid?'var(--accent)':'var(--error)'; }
-        else e.target.style.borderColor=e.target.value.length>0?'var(--warning)':'var(--border)';
-    });
-    pitidInput.addEventListener('input', e=>{
-        e.target.value=e.target.value.replace(/\D/g,'').substring(0,7);
-        if(e.target.value.length===7){ const v=validatePitid(e.target.value); e.target.style.borderColor=v.valid?'var(--accent)':'var(--error)'; }
-        else e.target.style.borderColor=e.target.value.length>0?'var(--warning)':'var(--border)';
-    });
-    addressInput.addEventListener('input', e=>{
-        const v=e.target.value.trim();
-        e.target.style.borderColor=v.length>=10?'var(--accent)':v.length>0?'var(--warning)':'var(--border)';
-    });
-
-    // ─── INITIALISATION ───
     function loadConfig(){
-        pitidInput.value          = localStorage.getItem('pitid') || '';
-        addressInput.value        = localStorage.getItem('address') || '';
-        initialCommentsInput.value= localStorage.getItem('initialComments') || '';
-        const savedQueue = localStorage.getItem('itemQueue');
-        if(savedQueue){ try{ itemQueue=JSON.parse(savedQueue); updateQueueDisplay(); }catch(e){} }
+        pitidInput.value=localStorage.getItem('pitid')||'';
+        addressInput.value=localStorage.getItem('address')||'';
+        initialCommentsInput.value=localStorage.getItem('initialComments')||'';
+        const sq=localStorage.getItem('itemQueue');
+        if(sq){ try{ itemQueue=JSON.parse(sq); updateQueueDisplay(); }catch(e){} }
         loginSection.style.display='block';
-        operationTypeSection.style.display='none';
-        sessionFormSection.style.display='none';
-        scanningSection.style.display='none';
+        [operationTypeSection,sessionFormSection,scanningSection].forEach(s=>s.style.display='none');
     }
 
-    // ─── SCAN ───
-    scanBtn.addEventListener('click', async () => {
+    // ── SCAN ──
+    scanBtn.addEventListener('click', async ()=>{
         try {
-            html5QrCode = new Html5Qrcode("reader");
-            await html5QrCode.start({ facingMode:"environment" },
-                { fps:10, qrbox:{width:250,height:250}, aspectRatio:1.0,
-                  formatsToSupport:[Html5QrcodeSupportedFormats.QR_CODE,Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E] },
-                onScanSuccess, ()=>{});
+            html5QrCode=new Html5Qrcode("reader");
+            await html5QrCode.start({facingMode:"environment"},
+                {fps:10,qrbox:{width:250,height:250},aspectRatio:1.0,
+                 formatsToSupport:[Html5QrcodeSupportedFormats.QR_CODE,Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E]},
+                onScanSuccess,()=>{});
             isScanning=true; scanBtn.style.display='none'; stopBtn.style.display='block';
-            showMessage('Scanner activé. Positionnez le code-barres devant la caméra.','success');
-        } catch(err){ showMessage("Impossible d'accéder à la caméra. Vérifiez les permissions.",'error'); }
+            showMessage('Scanner activé. Positionnez le code-barres.','success');
+        } catch(e){ showMessage("Impossible d'accéder à la caméra.",'error'); }
     });
-    stopBtn.addEventListener('click', async ()=>{ await stopScanning(); });
+    stopBtn.addEventListener('click', async ()=>await stopScanning());
     async function stopScanning(){
         if(html5QrCode&&isScanning){ await html5QrCode.stop(); isScanning=false; scanBtn.style.display='block'; stopBtn.style.display='none'; }
     }
 
-    // ─── CALLBACK SCAN RÉUSSI ───
     async function onScanSuccess(decodedText){
         if(scannedBarcode===decodedText) return;
-        scannedBarcode = decodedText;
-        // Réinitialiser les actions composants
-        componentActions = { bigFoot:null, miniFoot:null, poteau:null };
-        resetActionButtons();
-
+        scannedBarcode=decodedText;
+        selectedSupport=''; selectedPoteau='';
         if(navigator.vibrate) navigator.vibrate(200);
-        scanResultZone.innerHTML = `<div class="scan-result"><div class="scan-result-label">Code scanné</div><div class="scan-result-value">${decodedText}</div></div>`;
-        barcodeInput.value = decodedText; quantityInput.value='1'; notesInput.value='';
-        supportChoiceSection.style.display='block';
-        formSection.style.display='none';
-        confirmComponentsBtn.style.display='none';
-        showMessage('✓ Code scanné ! Configurez les composants.','success');
+        // reset boutons
+        [bigFootBtn,miniFootBtn,noSupportBtn].forEach(b=>b.classList.remove('selected'));
+        [poteauOuiBtn,poteauNonBtn].forEach(b=>b.classList.remove('selected-yes','selected-no'));
+        confirmChoicesBtn.style.display='none';
+
+        scanResultZone.innerHTML=`<div class="scan-result"><div class="scan-result-label">Code scanné</div><div class="scan-result-value">${decodedText}</div></div>`;
+        barcodeInput.value=decodedText; quantityInput.value='1'; notesInput.value='';
+        supportChoiceSection.style.display='block'; formSection.style.display='none';
+        showMessage('✓ Code scanné ! Choisissez le support et le poteau.','success');
     }
 
-    // ─── RÉINITIALISER LES BOUTONS D'ACTION ───
-    function resetActionButtons(){
-        document.querySelectorAll('.action-btn').forEach(b=>b.classList.remove('sel-action','sel-non'));
-        ['bigFoot','miniFoot','poteau'].forEach(c=>{
-            const el=document.getElementById(c+'Status');
-            if(el){ el.textContent='—'; el.className='component-row-status'; }
-        });
-        confirmComponentsBtn.style.display='none';
+    // ── Vérifier si les 2 choix sont faits ──
+    function checkChoicesReady(){
+        if(selectedSupport && selectedPoteau) confirmChoicesBtn.style.display='block';
+        else confirmChoicesBtn.style.display='none';
     }
 
-    // ─── EVENT LISTENERS : boutons d'action par composant ───
-    document.querySelectorAll('.action-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-            const comp   = btn.dataset.comp;
-            const action = btn.dataset.action;
-            // Désélectionner les autres boutons du même composant
-            document.querySelectorAll(`.action-btn[data-comp="${comp}"]`).forEach(b=>b.classList.remove('sel-action','sel-non'));
-            // Appliquer la classe selon l'action
-            btn.classList.add(action==='non' ? 'sel-non' : 'sel-action');
-            componentActions[comp] = action;
-            // Mettre à jour le statut
-            const statusEl = document.getElementById(comp+'Status');
-            if(statusEl){
-                const labels = { donner:'Donner ✓', placer:'Placer ✓', 'récupérer':'Récupérer ✓', non:'Non ✗' };
-                statusEl.textContent = labels[action] || action;
-                statusEl.className = 'component-row-status ' + (action==='non' ? 'inactive' : 'active');
-            }
-            // Afficher "Confirmer" si les 3 composants ont une action
-            const allReady = componentActions.bigFoot && componentActions.miniFoot && componentActions.poteau;
-            confirmComponentsBtn.style.display = allReady ? 'block' : 'none';
-        });
+    // ── Support ──
+    bigFootBtn.addEventListener('click',()=>{
+        selectedSupport='Big Foot';
+        bigFootBtn.classList.add('selected'); miniFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected');
+        checkChoicesReady();
+    });
+    miniFootBtn.addEventListener('click',()=>{
+        selectedSupport='Mini Foot';
+        miniFootBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected');
+        checkChoicesReady();
+    });
+    noSupportBtn.addEventListener('click',()=>{
+        selectedSupport='Rien';
+        noSupportBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); miniFootBtn.classList.remove('selected');
+        checkChoicesReady();
     });
 
-    confirmComponentsBtn.addEventListener('click',()=>{
-        supportChoiceSection.style.display='none';
-        formSection.style.display='block';
-        showMessage('✓ Composants configurés. Ajoutez des notes si nécessaire.','success');
+    // ── Poteau ──
+    poteauOuiBtn.addEventListener('click',()=>{
+        selectedPoteau='oui';
+        poteauOuiBtn.classList.add('selected-yes'); poteauNonBtn.classList.remove('selected-yes','selected-no');
+        checkChoicesReady();
+    });
+    poteauNonBtn.addEventListener('click',()=>{
+        selectedPoteau='non';
+        poteauNonBtn.classList.add('selected-no'); poteauOuiBtn.classList.remove('selected-yes','selected-no');
+        checkChoicesReady();
     });
 
-    // ─── AJOUTER À LA FILE D'ATTENTE ───
+    // ── Confirmer les choix ──
+    confirmChoicesBtn.addEventListener('click',()=>{
+        supportChoiceSection.style.display='none'; formSection.style.display='block';
+        const supportTxt = selectedSupport==='Rien' ? 'Aucun support' : selectedSupport;
+        const poteauTxt  = selectedPoteau==='oui' ? 'Avec poteau' : 'Sans poteau';
+        showMessage(`✓ ${supportTxt} · ${poteauTxt}. Ajoutez des notes si nécessaire.`,'success');
+    });
+
+    // ── Ajouter à la queue ──
     addToQueueBtn.addEventListener('click',()=>{
         if(!barcodeInput.value){ showMessage('Aucun code-barres détecté','error'); return; }
-        if(!componentActions.bigFoot||!componentActions.miniFoot||!componentActions.poteau){
-            showMessage('❌ Veuillez configurer tous les composants','error'); return;
-        }
-        const timestamp    = new Date().toISOString();
-        const panelBarcode = barcodeInput.value;
-        const baseId       = Date.now();
-        const sharedNotes  = notesInput.value || '';
+        if(!selectedSupport||!selectedPoteau){ showMessage('❌ Veuillez faire les deux choix','error'); return; }
+
+        const timestamp=new Date().toISOString(), panelBarcode=barcodeInput.value;
+        const baseId=Date.now(), notes=notesInput.value||'';
 
         // ① Panneau (toujours)
-        itemQueue.push({ id:baseId, type:'panel', barcode:panelBarcode, quantity:1, notes:sharedNotes, timestamp });
+        itemQueue.push({id:baseId, type:'panel', barcode:panelBarcode, quantity:1, notes, timestamp});
 
-        // ② Poteau (si action !== 'non')
-        if(componentActions.poteau !== 'non')
-            itemQueue.push({ id:baseId+1, type:'component', barcode:'Poteau aluminium', action:componentActions.poteau, quantity:1, notes:sharedNotes, timestamp, parentBarcode:panelBarcode });
+        // ② Poteau (si Oui)
+        if(selectedPoteau==='oui')
+            itemQueue.push({id:baseId+1, type:'component', barcode:'Poteau aluminium', quantity:1, notes, timestamp, parentBarcode:panelBarcode});
 
-        // ③ Big Foot (si action !== 'non')
-        if(componentActions.bigFoot !== 'non')
-            itemQueue.push({ id:baseId+2, type:'component', barcode:'Big Foot', action:componentActions.bigFoot, quantity:1, notes:sharedNotes, timestamp, parentBarcode:panelBarcode });
-
-        // ④ Mini Foot (si action !== 'non')
-        if(componentActions.miniFoot !== 'non')
-            itemQueue.push({ id:baseId+3, type:'component', barcode:'Mini Foot', action:componentActions.miniFoot, quantity:1, notes:sharedNotes, timestamp, parentBarcode:panelBarcode });
+        // ③ Support (si pas Rien)
+        if(selectedSupport!=='Rien')
+            itemQueue.push({id:baseId+2, type:'component', barcode:selectedSupport, quantity:1, notes, timestamp, parentBarcode:panelBarcode});
 
         saveQueue(); updateQueueDisplay();
-        scannedBarcode=''; componentActions={bigFoot:null,miniFoot:null,poteau:null};
+        scannedBarcode=''; selectedSupport=''; selectedPoteau='';
         barcodeInput.value=''; quantityInput.value='1'; notesInput.value='';
         scanResultZone.innerHTML=''; formSection.style.display='none'; supportChoiceSection.style.display='none';
-        const totalPanels = itemQueue.filter(i=>i.type==='panel').length;
-        showMessage(`✓ Panneau + composants ajoutés ! Total : ${totalPanels} panneau(x)`,'success');
+        const tot=itemQueue.filter(i=>i.type==='panel').length;
+        showMessage(`✓ Ajouté ! Total : ${tot} panneau(x) en file`,'success');
     });
 
     cancelBtn.addEventListener('click',()=>{
-        scannedBarcode=''; componentActions={bigFoot:null,miniFoot:null,poteau:null};
+        scannedBarcode=''; selectedSupport=''; selectedPoteau='';
         barcodeInput.value=''; quantityInput.value='1'; notesInput.value='';
         scanResultZone.innerHTML=''; formSection.style.display='none'; supportChoiceSection.style.display='none';
     });
 
-    // ─── RÉINITIALISATION ───
+    // ── Reset ──
     resetBtn.addEventListener('click', async ()=>{
-        if(itemQueue.length>0){
-            if(!window.confirm(`⚠️ Attention !\n\nVous avez ${itemQueue.length} article(s) non envoyé(s).\n\nVoulez-vous vraiment recommencer ?`)) return;
-        }
+        if(itemQueue.length>0 && !window.confirm(`⚠️ ${itemQueue.length} article(s) non envoyé(s).\n\nVoulez-vous vraiment recommencer ?`)) return;
         await stopScanning();
         itemQueue=[]; saveQueue(); updateQueueDisplay();
         pitidInput.value=''; addressInput.value=''; initialCommentsInput.value='';
         barcodeInput.value=''; quantityInput.value='1'; notesInput.value='';
-        operationType=''; scannedBarcode='';
-        componentActions={bigFoot:null,miniFoot:null,poteau:null};
-        resetActionButtons();
-        localStorage.removeItem('operationType'); localStorage.removeItem('pitid'); localStorage.removeItem('address');
-        localStorage.removeItem('initialComments'); localStorage.removeItem('itemQueue');
+        operationType=''; scannedBarcode=''; selectedSupport=''; selectedPoteau='';
+        localStorage.removeItem('operationType'); localStorage.removeItem('pitid');
+        localStorage.removeItem('address'); localStorage.removeItem('initialComments'); localStorage.removeItem('itemQueue');
         sessionFormSection.style.display='none'; scanningSection.style.display='none';
-        formSection.style.display='none'; supportChoiceSection.style.display='none';
-        scanResultZone.innerHTML='';
+        formSection.style.display='none'; supportChoiceSection.style.display='none'; scanResultZone.innerHTML='';
         operationTypeSection.style.display='block'; loginSection.style.display='none';
         showMessage("✓ Réinitialisation effectuée. Sélectionnez un type d'opération.",'success');
     });
 
-    // ─── QUEUE ───
-    function saveQueue(){ localStorage.setItem('itemQueue', JSON.stringify(itemQueue)); }
+    // ── Queue ──
+    function saveQueue(){ localStorage.setItem('itemQueue',JSON.stringify(itemQueue)); }
     function updateQueueDisplay(){
-        const panelCount = itemQueue.filter(i=>i.type==='panel').length;
-        queueCount.textContent = panelCount;
-        if(itemQueue.length===0){ queueSection.style.display='none'; queueList.innerHTML='<div class="queue-empty">Aucun article dans la liste</div>'; return; }
+        const pc=itemQueue.filter(i=>i.type==='panel').length;
+        queueCount.textContent=pc;
+        if(!itemQueue.length){ queueSection.style.display='none'; queueList.innerHTML='<div class="queue-empty">Aucun article dans la liste</div>'; return; }
         queueSection.style.display='block';
-        const actionLabel = a => ({ donner:'🎁 Donner', placer:'🏗️ Placer', 'récupérer':'🔄 Récupérer', non:'✕ Non' }[a]||a||'—');
-        queueList.innerHTML = itemQueue.map(item=>{
-            const isCpt = item.type==='component';
+        queueList.innerHTML=itemQueue.map(item=>{
+            const isCpt=item.type==='component';
             return `<div class="queue-item ${isCpt?'component':''}">
                 <div class="queue-item-header">
-                    <div class="queue-item-barcode">${isCpt?'└─ ':'📦 '}${item.barcode}${isCpt&&item.action?` <span style="font-size:0.75rem;color:var(--warning)">(${actionLabel(item.action)})</span>`:''}</div>
+                    <div class="queue-item-barcode">${isCpt?'└─ ':'📦 '}${item.barcode}</div>
                     ${!isCpt?`<button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>`:''}
                 </div>
                 <div class="queue-item-details">
-                    <div class="queue-item-detail"><div class="queue-item-label">Quantité</div><div class="queue-item-value">${item.quantity}</div></div>
+                    <div class="queue-item-detail"><div class="queue-item-label">Qté</div><div class="queue-item-value">${item.quantity}</div></div>
                     <div class="queue-item-detail"><div class="queue-item-label">${isCpt?'Type':'Heure'}</div><div class="queue-item-value">${isCpt?'Composant':new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div></div>
                     ${item.notes?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Notes</div><div class="queue-item-value">${item.notes}</div></div>`:''}
                 </div>
             </div>`;
         }).join('');
     }
-    window.removeFromQueue = function(id){
-        const panel = itemQueue.find(i=>i.id===id);
-        if(panel&&panel.type==='panel') itemQueue=itemQueue.filter(i=>i.id!==id&&i.parentBarcode!==panel.barcode);
+    window.removeFromQueue=function(id){
+        const p=itemQueue.find(i=>i.id===id);
+        if(p&&p.type==='panel') itemQueue=itemQueue.filter(i=>i.id!==id&&i.parentBarcode!==p.barcode);
         else itemQueue=itemQueue.filter(i=>i.id!==id);
-        saveQueue(); updateQueueDisplay();
-        showMessage('Panneau et composants supprimés','success');
+        saveQueue(); updateQueueDisplay(); showMessage('Supprimé','success');
     };
     clearQueueBtn.addEventListener('click',()=>{
         const pc=itemQueue.filter(i=>i.type==='panel').length;
-        if(confirm(`Supprimer les ${pc} panneau(x) et leurs composants ?`)){ itemQueue=[]; saveQueue(); updateQueueDisplay(); showMessage('Liste vidée','success'); }
+        if(confirm(`Supprimer ${pc} panneau(x) et leurs composants ?`)){ itemQueue=[]; saveQueue(); updateQueueDisplay(); showMessage('Liste vidée','success'); }
     });
 
-    // ─── ENVOI VERS SHAREPOINT ───
+    // ── Envoi ──
     sendAllBtn.addEventListener('click', async ()=>{
-        const pv=peridInput.value.trim(); const pvr=validatePerid(pv);
+        const pv=peridInput.value.trim(), pvr=validatePerid(pv);
         if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); return; }
-        const config=operationConfig[operationType];
-        if(config.fields.includes('pitid')){ const r=validatePitid(pitidInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
-        if(config.fields.includes('address')){ const r=validateAddress(addressInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
-        if(itemQueue.length===0){ showMessage('❌ Aucun article à envoyer','error'); return; }
+        const cfg=operationConfig[operationType];
+        if(cfg.fields.includes('pitid')){ const r=validatePitid(pitidInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
+        if(cfg.fields.includes('address')){ const r=validateAddress(addressInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
+        if(!itemQueue.length){ showMessage('❌ Aucun article à envoyer','error'); return; }
 
         sendAllBtn.disabled=true; sendAllBtn.innerHTML='<span class="spinner"></span>Envoi en cours...';
         const now=new Date();
-        const formattedDate=`${String(now.getDate()).padStart(2,'0')}_${String(now.getMonth()+1).padStart(2,'0')}_${now.getFullYear()}`;
-        const scannedByValue=`Mouv_${pv}_${formattedDate}_${config.label.replace(/\s+/g,'_')}`;
-        let successCount=0, errorCount=0;
+        const fd=`${String(now.getDate()).padStart(2,'0')}_${String(now.getMonth()+1).padStart(2,'0')}_${now.getFullYear()}`;
+        const scannedByValue=`Mouv_${pv}_${fd}_${cfg.label.replace(/\s+/g,'_')}`;
+        let ok=0, ko=0;
 
         try {
-            for(let i=0; i<itemQueue.length; i++){
+            for(let i=0;i<itemQueue.length;i++){
                 const item=itemQueue[i];
                 sendAllBtn.innerHTML=`<span class="spinner"></span>Envoi ${i+1}/${itemQueue.length}...`;
 
-                // Actions du groupe auquel appartient cet item
-                const parentCode = item.type==='panel' ? item.barcode : item.parentBarcode;
-                const group = itemQueue.filter(x=>x.barcode===parentCode||x.parentBarcode===parentCode);
-                const gBigFoot  = group.find(x=>x.barcode==='Big Foot');
-                const gMiniFoot = group.find(x=>x.barcode==='Mini Foot');
-                const gPoteau   = group.find(x=>x.barcode==='Poteau aluminium');
+                // Retrouver les composants du groupe de ce panneau
+                const parentCode=item.type==='panel'?item.barcode:item.parentBarcode;
+                const group=itemQueue.filter(x=>x.barcode===parentCode||x.parentBarcode===parentCode);
+                const gBigFoot  = group.some(x=>x.barcode==='Big Foot');
+                const gMiniFoot = group.some(x=>x.barcode==='Mini Foot');
+                const gPoteau   = group.some(x=>x.barcode==='Poteau aluminium');
 
-                const itemData = {
-                    operationType, operationLabel: config.label,
-                    perid: pv, pitid: pitidInput.value.trim()||"", address: addressInput.value.trim()||"", initialComments: initialCommentsInput.value.trim()||"",
-                    items:[{ barcode:item.barcode, quantity:parseInt(item.quantity), notes:item.notes||"", timestamp:item.timestamp, type:item.type||'panel', parentBarcode:item.parentBarcode||"", action:item.action||"" }],
-                    // Booléens présence
-                    hasBigFoot:  !!gBigFoot,
-                    hasMiniFoot: !!gMiniFoot,
-                    hasPoteau:   !!gPoteau,
-                    // Actions par composant
-                    bigFootAction:  gBigFoot?.action  || 'non',
-                    miniFootAction: gMiniFoot?.action || 'non',
-                    poteauAction:   gPoteau?.action   || 'non',
+                const payload={
+                    operationType, operationLabel:cfg.label,
+                    perid:pv, pitid:pitidInput.value.trim()||'', address:addressInput.value.trim()||'', initialComments:initialCommentsInput.value.trim()||'',
+                    items:[{barcode:item.barcode,quantity:parseInt(item.quantity),notes:item.notes||'',timestamp:item.timestamp,type:item.type||'panel',parentBarcode:item.parentBarcode||''}],
+                    hasBigFoot:gBigFoot, hasMiniFoot:gMiniFoot, hasPoteau:gPoteau,
                     totalItems:1, batchTimestamp:new Date().toISOString(), scannedBy:scannedByValue, itemIndex:i+1, totalBatchItems:itemQueue.length
                 };
                 try {
-                    const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(itemData)});
-                    if(res.ok) successCount++; else errorCount++;
-                } catch(e){ errorCount++; }
+                    const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                    if(res.ok) ok++; else ko++;
+                } catch(e){ ko++; }
                 if(i<itemQueue.length-1) await new Promise(r=>setTimeout(r,100));
             }
-            if(errorCount===0){
-                showMessage(`✓ ${successCount} ligne(s) envoyée(s) avec succès !`,'success');
-                itemQueue=[]; saveQueue(); updateQueueDisplay();
-            } else {
-                showMessage(`⚠️ Envoi partiel : ${successCount} réussi(s), ${errorCount} échec(s)`,'warning');
-            }
+            if(ko===0){ showMessage(`✓ ${ok} ligne(s) envoyée(s) avec succès !`,'success'); itemQueue=[]; saveQueue(); updateQueueDisplay(); }
+            else showMessage(`⚠️ Envoi partiel : ${ok} réussi(s), ${ko} échec(s)`,'warning');
         } catch(e){ showMessage(`❌ Erreur : ${e.message}`,'error'); }
         sendAllBtn.disabled=false; sendAllBtn.innerHTML='🚀 Tout envoyer et clôturer';
     });
 
-    // ─── TEST CONNEXION ───
+    // ── Test connexion ──
     testConnectionBtn.addEventListener('click', async ()=>{
-        testConnectionBtn.disabled=true; testConnectionBtn.innerHTML='<span class="spinner"></span>Test en cours...';
+        testConnectionBtn.disabled=true; testConnectionBtn.innerHTML='<span class="spinner"></span>Test...';
         try {
-            const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operationType:'test',operationLabel:'Test',perid:'TEST',pitid:'',address:'',initialComments:'Test de connexion',items:[{barcode:'TEST123',quantity:1,notes:'Test',timestamp:new Date().toISOString()}],totalItems:1,batchTimestamp:new Date().toISOString(),scannedBy:'Test'})});
-            if(res.ok) showMessage('✅ Connexion à Power Automate OK','success');
-            else showMessage(`❌ Test échoué (${res.status})`,'error');
-        } catch(e){ showMessage(`❌ Erreur CORS ou réseau : ${e.message}`,'error'); }
+            const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operationType:'test',operationLabel:'Test',perid:'TEST',pitid:'',address:'',initialComments:'Test',items:[{barcode:'TEST',quantity:1,notes:'',timestamp:new Date().toISOString()}],hasBigFoot:false,hasMiniFoot:false,hasPoteau:false,totalItems:1,batchTimestamp:new Date().toISOString(),scannedBy:'Test',itemIndex:1,totalBatchItems:1})});
+            showMessage(res.ok?'✅ Connexion OK':'`❌ Test échoué ('+res.status+')`',res.ok?'success':'error');
+        } catch(e){ showMessage(`❌ Erreur réseau : ${e.message}`,'error'); }
         testConnectionBtn.disabled=false; testConnectionBtn.innerHTML='🔌 Tester la connexion Power Automate';
     });
 
     loadConfig();
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; });
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();});
 </script>
 </body>
 </html>

@@ -322,6 +322,14 @@
         retour:     { label:'Retour stock',            fields:['perid'] }
     };
 
+    // ── Codes QR spéciaux (bypass choix support/poteau) ──
+    const SPECIAL_CODES = {
+        'SIGNA-BIGFOOD 25KG':    { hasBigFoot: true,  hasMiniFoot: false, hasPoteau: false, label: '⬛ Big Foot 25KG'   },
+        'SIGNA-MINIFOOD 15KG':   { hasBigFoot: false, hasMiniFoot: true,  hasPoteau: false, label: '◾ Mini Foot 15KG'  },
+        'SIGNA-Support_Panneau': { hasBigFoot: false,  hasMiniFoot: false, hasPoteau: false, label: '🪧 Support Panneau' },
+    };
+    let specialCodeConfig = null;
+
     // ── Validation ──
     function isRepeatingDigits(v){ return /^(\d)\1+$/.test(v); }
     function isSequentialDigits(v){
@@ -470,17 +478,42 @@
     async function onScanSuccess(decodedText){
         if(scannedBarcode===decodedText) return;
         scannedBarcode=decodedText;
-        selectedSupport=''; selectedPoteau='';
+        selectedSupport=''; selectedPoteau=''; specialCodeConfig=null;
         if(navigator.vibrate) navigator.vibrate(200);
         // reset boutons
         [bigFootBtn,miniFootBtn,noSupportBtn].forEach(b=>b.classList.remove('selected'));
         [poteauOuiBtn,poteauNonBtn].forEach(b=>b.classList.remove('selected-yes','selected-no'));
         confirmChoicesBtn.style.display='none';
 
-        scanResultZone.innerHTML=`<div class="scan-result"><div class="scan-result-label">Code scanné</div><div class="scan-result-value">${decodedText}</div></div>`;
         barcodeInput.value=decodedText; quantityInput.value='1'; notesInput.value='';
-        supportChoiceSection.style.display='block'; formSection.style.display='none';
-        showMessage('✓ Code scanné ! Choisissez le support et le poteau.','success');
+
+        // ── Détection code spécial ──
+        if(SPECIAL_CODES[decodedText]){
+            specialCodeConfig = SPECIAL_CODES[decodedText];
+            const badgeColor = specialCodeConfig.hasBigFoot ? '#F97316' : specialCodeConfig.hasMiniFoot ? '#F59E0B' : '#94A3B8';
+            scanResultZone.innerHTML=`
+                <div class="scan-result">
+                    <div class="scan-result-label">Code spécial détecté</div>
+                    <div class="scan-result-value">${decodedText}</div>
+                    <div style="margin-top:10px;padding:8px 12px;background:${badgeColor}22;border:1px solid ${badgeColor};border-radius:8px;font-size:.85rem;color:${badgeColor};font-weight:600;">
+                        ${specialCodeConfig.label} — Composants définis automatiquement
+                    </div>
+                    <div style="margin-top:8px;font-size:.78rem;color:var(--text-secondary);">
+                        Big Foot: <strong>${specialCodeConfig.hasBigFoot?'✅':'❌'}</strong> &nbsp;|&nbsp;
+                        Mini Foot: <strong>${specialCodeConfig.hasMiniFoot?'✅':'❌'}</strong> &nbsp;|&nbsp;
+                        Poteau: <strong>${specialCodeConfig.hasPoteau?'✅':'❌'}</strong>
+                    </div>
+                </div>`;
+            // Bypass des choix → afficher directement les notes
+            supportChoiceSection.style.display='none';
+            formSection.style.display='block';
+            showMessage(`✓ ${specialCodeConfig.label} — valeurs automatiques. Ajoutez des notes si nécessaire.`,'success');
+        } else {
+            // Code normal : afficher les choix support + poteau
+            scanResultZone.innerHTML=`<div class="scan-result"><div class="scan-result-label">Code scanné</div><div class="scan-result-value">${decodedText}</div></div>`;
+            supportChoiceSection.style.display='block'; formSection.style.display='none';
+            showMessage('✓ Code scanné ! Choisissez le support et le poteau.','success');
+        }
     }
 
     // ── Vérifier si les 2 choix sont faits ──
@@ -529,28 +562,41 @@
     // ── Ajouter à la queue ──
     addToQueueBtn.addEventListener('click',()=>{
         if(!barcodeInput.value){ showMessage('Aucun code-barres détecté','error'); return; }
-        if(!selectedSupport||!selectedPoteau){ showMessage('❌ Veuillez faire les deux choix','error'); return; }
 
-        const timestamp=new Date().toISOString(), panelBarcode=barcodeInput.value;
+        const timestamp=new Date().toISOString(), barcode=barcodeInput.value;
         const baseId=Date.now(), notes=notesInput.value||'';
 
-        // ① Panneau (toujours)
-        itemQueue.push({id:baseId, type:'panel', barcode:panelBarcode, quantity:1, notes, timestamp});
+        if(specialCodeConfig){
+            // ── CAS SPÉCIAL : 1 seul item, booléens automatiques ──
+            itemQueue.push({
+                id:baseId, type:'special', barcode, quantity:1, notes, timestamp,
+                hasBigFoot:  specialCodeConfig.hasBigFoot,
+                hasMiniFoot: specialCodeConfig.hasMiniFoot,
+                hasPoteau:   specialCodeConfig.hasPoteau,
+                specialLabel: specialCodeConfig.label
+            });
+        } else {
+            // ── CAS NORMAL : panneau + composants ──
+            if(!selectedSupport||!selectedPoteau){ showMessage('❌ Veuillez faire les deux choix','error'); return; }
 
-        // ② Poteau (si Oui)
-        if(selectedPoteau==='oui')
-            itemQueue.push({id:baseId+1, type:'component', barcode:'Poteau aluminium', quantity:1, notes, timestamp, parentBarcode:panelBarcode});
+            // ① Panneau (toujours)
+            itemQueue.push({id:baseId, type:'panel', barcode, quantity:1, notes, timestamp});
 
-        // ③ Support (si pas Rien)
-        if(selectedSupport!=='Rien')
-            itemQueue.push({id:baseId+2, type:'component', barcode:selectedSupport, quantity:1, notes, timestamp, parentBarcode:panelBarcode});
+            // ② Poteau (si Oui)
+            if(selectedPoteau==='oui')
+                itemQueue.push({id:baseId+1, type:'component', barcode:'Poteau aluminium', quantity:1, notes, timestamp, parentBarcode:barcode});
+
+            // ③ Support (si pas Rien)
+            if(selectedSupport!=='Rien')
+                itemQueue.push({id:baseId+2, type:'component', barcode:selectedSupport, quantity:1, notes, timestamp, parentBarcode:barcode});
+        }
 
         saveQueue(); updateQueueDisplay();
-        scannedBarcode=''; selectedSupport=''; selectedPoteau='';
+        scannedBarcode=''; selectedSupport=''; selectedPoteau=''; specialCodeConfig=null;
         barcodeInput.value=''; quantityInput.value='1'; notesInput.value='';
         scanResultZone.innerHTML=''; formSection.style.display='none'; supportChoiceSection.style.display='none';
-        const tot=itemQueue.filter(i=>i.type==='panel').length;
-        showMessage(`✓ Ajouté ! Total : ${tot} panneau(x) en file`,'success');
+        const tot=itemQueue.filter(i=>i.type==='panel'||i.type==='special').length;
+        showMessage(`✓ Ajouté ! Total : ${tot} article(s) en file`,'success');
     });
 
     cancelBtn.addEventListener('click',()=>{
@@ -584,14 +630,18 @@
         queueSection.style.display='block';
         queueList.innerHTML=itemQueue.map(item=>{
             const isCpt=item.type==='component';
-            return `<div class="queue-item ${isCpt?'component':''}">
+            const isSpc=item.type==='special';
+            const icon = isCpt ? '└─ ' : isSpc ? '⚡ ' : '📦 ';
+            const badgeSpc = isSpc ? `<span style="font-size:.72rem;background:var(--warning);color:var(--bg-primary);padding:2px 7px;border-radius:20px;margin-left:6px;font-weight:700;">Auto</span>` : '';
+            return `<div class="queue-item ${isCpt?'component':isSpc?'component':''}">
                 <div class="queue-item-header">
-                    <div class="queue-item-barcode">${isCpt?'└─ ':'📦 '}${item.barcode}</div>
+                    <div class="queue-item-barcode">${icon}${item.barcode}${badgeSpc}</div>
                     ${!isCpt?`<button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>`:''}
                 </div>
                 <div class="queue-item-details">
                     <div class="queue-item-detail"><div class="queue-item-label">Qté</div><div class="queue-item-value">${item.quantity}</div></div>
-                    <div class="queue-item-detail"><div class="queue-item-label">${isCpt?'Type':'Heure'}</div><div class="queue-item-value">${isCpt?'Composant':new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div></div>
+                    <div class="queue-item-detail"><div class="queue-item-label">${isCpt?'Type':isSpc?'Type':'Heure'}</div><div class="queue-item-value">${isCpt?'Composant':isSpc?(item.specialLabel||'Spécial'):new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div></div>
+                    ${isSpc?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Booléens auto</div><div class="queue-item-value" style="font-size:.8rem">BigFoot:${item.hasBigFoot?'✅':'❌'} · MiniFoot:${item.hasMiniFoot?'✅':'❌'} · Poteau:${item.hasPoteau?'✅':'❌'}</div></div>`:''}
                     ${item.notes?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Notes</div><div class="queue-item-value">${item.notes}</div></div>`:''}
                 </div>
             </div>`;
@@ -628,18 +678,24 @@
                 const item=itemQueue[i];
                 sendAllBtn.innerHTML=`<span class="spinner"></span>Envoi ${i+1}/${itemQueue.length}...`;
 
-                // Retrouver les composants du groupe de ce panneau
-                const parentCode=item.type==='panel'?item.barcode:item.parentBarcode;
-                const group=itemQueue.filter(x=>x.barcode===parentCode||x.parentBarcode===parentCode);
-                const gBigFoot  = group.some(x=>x.barcode==='Big Foot');
-                const gMiniFoot = group.some(x=>x.barcode==='Mini Foot');
-                const gPoteau   = group.some(x=>x.barcode==='Poteau aluminium');
+                // Booléens : code spécial = auto, code normal = calculé depuis le groupe
+                let hBF, hMF, hPT;
+                if(item.type==='special'){
+                    hBF=item.hasBigFoot; hMF=item.hasMiniFoot; hPT=item.hasPoteau;
+                } else {
+                    const parentCode=item.type==='panel'?item.barcode:item.parentBarcode;
+                    const group=itemQueue.filter(x=>x.barcode===parentCode||x.parentBarcode===parentCode);
+                    hBF = group.some(x=>x.barcode==='Big Foot');
+                    hMF = group.some(x=>x.barcode==='Mini Foot');
+                    hPT = group.some(x=>x.barcode==='Poteau aluminium');
+                }
 
                 const payload={
                     operationType, operationLabel:cfg.label,
                     perid:pv, pitid:pitidInput.value.trim()||'', address:addressInput.value.trim()||'', initialComments:initialCommentsInput.value.trim()||'',
                     items:[{barcode:item.barcode,quantity:parseInt(item.quantity),notes:item.notes||'',timestamp:item.timestamp,type:item.type||'panel',parentBarcode:item.parentBarcode||''}],
-                    hasBigFoot:gBigFoot, hasMiniFoot:gMiniFoot, hasPoteau:gPoteau,
+                    hasBigFoot:hBF, hasMiniFoot:hMF, hasPoteau:hPT,
+                    isSpecialCode: item.type==='special',
                     totalItems:1, batchTimestamp:new Date().toISOString(), scannedBy:scannedByValue, itemIndex:i+1, totalBatchItems:itemQueue.length
                 };
                 try {

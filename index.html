@@ -322,10 +322,10 @@
     // lockedPerid = PERID de la session, non modifiable
     const operationConfig={
         fourniture: {label:'Fourniture technicien',fields:['perid','depot'],              lockedPerid:false},
+        prisestock: {label:'Prise de stock',        fields:['depot'],                     lockedPerid:true},
         placement:  {label:'Placement chantier',   fields:['perid','pitid','address'],    lockedPerid:false},
         reprise:    {label:'Reprise chantier',      fields:['perid','pitid','address'],    lockedPerid:false},
         retour:     {label:'Retour stock',          fields:['perid','depot'],              lockedPerid:false},
-        prisestock: {label:'Prise de stock',        fields:['depot'],                     lockedPerid:true},
     };
 
     // DOM

@@ -482,7 +482,7 @@
         }else{
             peridGroup.style.display='block';
             peridLockedGroup.style.display='none';
-            peridInput.value=currentPerid;
+            peridInput.value = (type === 'fourniture' || type === 'retour') ? '' : currentPerid;
         }
 
         const needsDepot=cfg.fields.includes('depot');

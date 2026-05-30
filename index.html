@@ -12,16 +12,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
         :root {
-            --bg-primary: #0F172A;
-            --bg-secondary: #1E293B;
-            --bg-card: #334155;
-            --accent: #F97316;
-            --accent-hover: #EA580C;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --border: #475569;
-            --error: #EF4444;
-            --warning: #F59E0B;
+            --bg-primary: #0F172A; --bg-secondary: #1E293B; --bg-card: #334155;
+            --accent: #F97316; --accent-hover: #EA580C;
+            --text-primary: #F1F5F9; --text-secondary: #94A3B8;
+            --border: #475569; --error: #EF4444; --warning: #F59E0B;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
@@ -55,28 +49,53 @@
         input:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
         textarea { resize:vertical; min-height:80px; }
 
+        /* ── Sélection dépôt de stock ── */
+        .depot-grid { display:flex; flex-direction:column; gap:8px; }
+        .depot-btn {
+            background:var(--bg-card); border:2px solid var(--border); border-radius:10px;
+            padding:14px 16px; cursor:pointer; transition:all .25s ease;
+            display:flex; align-items:center; gap:12px;
+            font-family:'IBM Plex Sans',sans-serif; color:var(--text-primary);
+            text-align:left; width:100%;
+        }
+        .depot-btn:hover { border-color:var(--accent); background:rgba(249,115,22,.06); transform:translateX(4px); }
+        .depot-btn.selected { background:rgba(249,115,22,.15); border-color:var(--accent); color:var(--text-primary); }
+        .depot-btn.selected .depot-radio { background:var(--accent); border-color:var(--accent); }
+        .depot-btn.selected .depot-radio::after { display:block; }
+        .depot-radio {
+            width:18px; height:18px; border-radius:50%; border:2px solid var(--border);
+            background:var(--bg-secondary); flex-shrink:0; position:relative; transition:all .2s;
+        }
+        .depot-radio::after {
+            content:''; display:none; position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%); width:8px; height:8px;
+            border-radius:50%; background:var(--bg-primary);
+        }
+        .depot-name { font-weight:600; font-size:.9rem; }
+        .depot-code { font-size:.75rem; color:var(--text-secondary); font-family:'Space Mono',monospace; margin-top:2px; }
+        .depot-selected-badge {
+            display:none; background:var(--accent); color:var(--bg-primary);
+            padding:3px 10px; border-radius:20px; font-size:.75rem;
+            font-family:'Space Mono',monospace; font-weight:700; margin-left:auto;
+        }
+        .depot-btn.selected .depot-selected-badge { display:block; }
+
         /* ── Boîte de choix composants ── */
         .choice-box { background:var(--bg-card); border:2px solid var(--accent); border-radius:12px; padding:18px; margin-bottom:16px; animation:fadeInUp .3s ease-out; }
         .choice-box-title { font-family:'Space Mono',monospace; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); margin-bottom:12px; }
-
-        /* Support : 3 boutons */
         .support-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
         .support-btn { background:var(--bg-secondary); border:2px solid var(--border); border-radius:10px; padding:14px 8px; cursor:pointer; transition:all .25s ease; display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'IBM Plex Sans',sans-serif; color:var(--text-primary); }
         .support-btn:hover { border-color:var(--accent); transform:translateY(-2px); }
         .support-btn.selected { background:var(--accent); border-color:var(--accent); color:var(--bg-primary); }
         .support-icon { font-size:1.5rem; line-height:1; }
         .support-label { font-size:.82rem; font-weight:700; }
-
-        /* Poteau : 2 boutons */
         .poteau-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
         .poteau-btn { background:var(--bg-secondary); border:2px solid var(--border); border-radius:10px; padding:14px 8px; cursor:pointer; transition:all .25s ease; display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'IBM Plex Sans',sans-serif; color:var(--text-primary); }
         .poteau-btn:hover { border-color:var(--accent); transform:translateY(-2px); }
-        .poteau-btn.selected-yes  { background:var(--accent); border-color:var(--accent); color:var(--bg-primary); }
-        .poteau-btn.selected-no   { background:rgba(239,68,68,.15); border-color:var(--error); color:var(--error); }
+        .poteau-btn.selected-yes { background:var(--accent); border-color:var(--accent); color:var(--bg-primary); }
+        .poteau-btn.selected-no  { background:rgba(239,68,68,.15); border-color:var(--error); color:var(--error); }
         .poteau-icon { font-size:1.5rem; line-height:1; }
         .poteau-label { font-size:.82rem; font-weight:700; }
-
-        /* Bouton confirmer */
         .btn-confirm { display:none; width:100%; margin-top:14px; padding:14px; background:var(--accent); color:var(--bg-primary); border:none; border-radius:12px; font-family:'Space Mono',monospace; font-weight:700; font-size:.9rem; cursor:pointer; transition:all .3s ease; text-transform:uppercase; letter-spacing:.05em; }
         .btn-confirm:hover { background:var(--accent-hover); transform:translateY(-2px); }
 
@@ -85,7 +104,7 @@
         .message { padding:16px; border-radius:12px; font-weight:500; animation:slideIn .3s ease-out; }
         @keyframes slideIn { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
         .message-success { background:rgba(249,115,22,.15); border:1px solid var(--accent); color:var(--accent); }
-        .message-error   { background:rgba(239,68,68,.15);  border:1px solid var(--error);  color:var(--error); }
+        .message-error   { background:rgba(239,68,68,.15); border:1px solid var(--error); color:var(--error); }
         .message-warning { background:rgba(245,158,11,.15); border:1px solid var(--warning); color:var(--warning); }
         .scan-result { background:var(--bg-card); border:2px solid var(--accent); border-radius:12px; padding:16px; margin-bottom:16px; animation:pulse .5s ease-out; }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
@@ -116,6 +135,16 @@
         .queue-item-value { color:var(--text-primary); font-weight:500; }
         .queue-empty { text-align:center; padding:40px 20px; color:var(--text-secondary); font-style:italic; }
         .queue-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+
+        /* Badge dépôt dans la zone de scan */
+        .depot-badge-scan {
+            display:inline-flex; align-items:center; gap:6px;
+            background:rgba(249,115,22,.15); border:1px solid var(--accent);
+            border-radius:20px; padding:5px 12px; font-size:.8rem;
+            font-family:'Space Mono',monospace; color:var(--accent); font-weight:700;
+            margin-bottom:12px;
+        }
+
         @media(max-width:480px){ h1{font-size:1.6rem} .operation-type-grid{grid-template-columns:1fr} .queue-item-details{grid-template-columns:1fr} }
     </style>
 </head>
@@ -152,25 +181,66 @@
             <strong id="selectedOperationType" style="color:var(--accent);font-family:'Space Mono',monospace;margin-left:8px;"></strong>
             <button id="changeOperationBtn" class="btn-link" style="margin-left:12px;color:var(--accent);background:none;border:none;cursor:pointer;text-decoration:underline;font-size:.85rem;">Changer</button>
         </div>
+
+        <!-- PER ID -->
         <div class="form-group">
             <label for="peridInput">PER ID — 6 chiffres</label>
             <input type="text" id="peridInput" placeholder="Ex: 835967" maxlength="6" inputmode="numeric">
             <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Pas de répétitions (sauf 888888 / 666666) • Pas de séquences</small>
         </div>
+
+        <!-- SÉLECTION DÉPÔT (fourniture + retour uniquement) -->
+        <div class="form-group" id="depotGroup" style="display:none;">
+            <label>🏭 Dépôt de stock</label>
+            <div class="depot-grid" id="depotGrid">
+                <button class="depot-btn" data-depot="Stock_Seneffe">
+                    <div class="depot-radio"></div>
+                    <div><div class="depot-name">Seneffe</div><div class="depot-code">Stock_Seneffe</div></div>
+                    <span class="depot-selected-badge">✓ Sélectionné</span>
+                </button>
+                <button class="depot-btn" data-depot="Stock_Ath_68ATH0">
+                    <div class="depot-radio"></div>
+                    <div><div class="depot-name">Ath</div><div class="depot-code">Stock_Ath_68ATH0</div></div>
+                    <span class="depot-selected-badge">✓ Sélectionné</span>
+                </button>
+                <button class="depot-btn" data-depot="Stock_Limal_010LIM0">
+                    <div class="depot-radio"></div>
+                    <div><div class="depot-name">Limal</div><div class="depot-code">Stock_Limal_010LIM0</div></div>
+                    <span class="depot-selected-badge">✓ Sélectionné</span>
+                </button>
+                <button class="depot-btn" data-depot="Stock_Antoing_69ANT0">
+                    <div class="depot-radio"></div>
+                    <div><div class="depot-name">Antoing</div><div class="depot-code">Stock_Antoing_69ANT0</div></div>
+                    <span class="depot-selected-badge">✓ Sélectionné</span>
+                </button>
+                <button class="depot-btn" data-depot="Stock_Tubize_02TUB0">
+                    <div class="depot-radio"></div>
+                    <div><div class="depot-name">Tubize</div><div class="depot-code">Stock_Tubize_02TUB0</div></div>
+                    <span class="depot-selected-badge">✓ Sélectionné</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PIT ID -->
         <div class="form-group" id="pitidGroup" style="display:none;">
             <label for="pitidInput">PIT ID — 7 chiffres</label>
             <input type="text" id="pitidInput" placeholder="Ex: 1234567" maxlength="7" inputmode="numeric">
             <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Pas de répétitions • Pas de séquences</small>
         </div>
+
+        <!-- ADRESSE -->
         <div class="form-group" id="addressGroup" style="display:none;">
             <label for="addressInput" id="addressLabel">Adresse</label>
             <textarea id="addressInput" placeholder="Adresse du chantier..." rows="2" minlength="10"></textarea>
             <small style="color:var(--text-secondary);font-size:.82rem;display:block;margin-top:4px;">Minimum 10 caractères</small>
         </div>
+
+        <!-- COMMENTAIRES -->
         <div class="form-group">
             <label for="initialCommentsInput">Commentaires initiaux (optionnel)</label>
             <textarea id="initialCommentsInput" placeholder="Commentaires généraux..."></textarea>
         </div>
+
         <button id="startScanningBtn" class="btn btn-primary">✓ Valider et commencer</button>
     </div>
 
@@ -179,50 +249,33 @@
         <div style="text-align:center;margin-bottom:16px;">
             <button id="resetBtn" class="btn btn-secondary" style="max-width:300px;">🔄 Recommencer (nouvelle opération)</button>
         </div>
+
+        <!-- Badge dépôt actif (visible si dépôt sélectionné) -->
+        <div id="depotBadgeZone"></div>
+
         <div id="reader"></div>
         <button id="scanBtn" class="btn btn-primary"><span class="status status-ready"></span>Démarrer le scan</button>
         <button id="stopBtn" class="btn btn-danger" style="display:none;margin-top:0;"><span class="status status-scanning"></span>Arrêter le scan</button>
 
         <div id="scanResultZone"></div>
 
-        <!-- ── CHOIX COMPOSANTS ── -->
+        <!-- CHOIX COMPOSANTS -->
         <div id="supportChoiceSection" style="display:none;">
-
-            <!-- 1. Type de support -->
             <div class="choice-box">
                 <div class="choice-box-title">Type de support</div>
                 <div class="support-grid">
-                    <button class="support-btn" id="bigFootBtn">
-                        <div class="support-icon">⬛ L</div>
-                        <div class="support-label">Big Foot</div>
-                    </button>
-                    <button class="support-btn" id="miniFootBtn">
-                        <div class="support-icon">◾ S</div>
-                        <div class="support-label">Mini Foot</div>
-                    </button>
-                    <button class="support-btn" id="noSupportBtn">
-                        <div class="support-icon">⭕</div>
-                        <div class="support-label">Rien</div>
-                    </button>
+                    <button class="support-btn" id="bigFootBtn"><div class="support-icon">⬛ L</div><div class="support-label">Big Foot</div></button>
+                    <button class="support-btn" id="miniFootBtn"><div class="support-icon">◾ S</div><div class="support-label">Mini Foot</div></button>
+                    <button class="support-btn" id="noSupportBtn"><div class="support-icon">⭕</div><div class="support-label">Rien</div></button>
                 </div>
             </div>
-
-            <!-- 2. Poteau -->
             <div class="choice-box">
                 <div class="choice-box-title">Poteau aluminium</div>
                 <div class="poteau-grid">
-                    <button class="poteau-btn" id="poteauOuiBtn">
-                        <div class="poteau-icon">✅</div>
-                        <div class="poteau-label">Oui</div>
-                    </button>
-                    <button class="poteau-btn" id="poteauNonBtn">
-                        <div class="poteau-icon">❌</div>
-                        <div class="poteau-label">Non</div>
-                    </button>
+                    <button class="poteau-btn" id="poteauOuiBtn"><div class="poteau-icon">✅</div><div class="poteau-label">Oui</div></button>
+                    <button class="poteau-btn" id="poteauNonBtn"><div class="poteau-icon">❌</div><div class="poteau-label">Non</div></button>
                 </div>
             </div>
-
-            <!-- Bouton confirmer (visible quand les 2 choix sont faits) -->
             <button id="confirmChoicesBtn" class="btn-confirm">✓ Confirmer et ajouter des notes</button>
         </div>
 
@@ -269,8 +322,29 @@
     // ── Variables ──
     let html5QrCode, isScanning = false, scannedBarcode = '';
     let itemQueue = [], operationType = '', currentPerid = '';
-    let selectedSupport = ''; // 'Big Foot' | 'Mini Foot' | 'Rien'
-    let selectedPoteau  = ''; // 'oui' | 'non'
+    let selectedSupport = '', selectedPoteau = '', specialCodeConfig = null;
+    let selectedDepot = ''; // ← NOUVEAU
+
+    const DEPOTS = [
+        { id:'Stock_Seneffe',       name:'Seneffe'  },
+        { id:'Stock_Ath_68ATH0',    name:'Ath'      },
+        { id:'Stock_Limal_010LIM0', name:'Limal'    },
+        { id:'Stock_Antoing_69ANT0',name:'Antoing'  },
+        { id:'Stock_Tubize_02TUB0', name:'Tubize'   },
+    ];
+
+    const SPECIAL_CODES = {
+        'SIGNA-BIGFOOD 25KG':    { hasBigFoot:true,  hasMiniFoot:false, hasPoteau:false, label:'⬛ Big Foot 25KG'   },
+        'SIGNA-MINIFOOD 15KG':   { hasBigFoot:false, hasMiniFoot:true,  hasPoteau:false, label:'◾ Mini Foot 15KG'  },
+        'SIGNA-Support_Panneau': { hasBigFoot:false,  hasMiniFoot:false, hasPoteau:true, label:'🪧 Support Panneau' },
+    };
+
+    const operationConfig = {
+        fourniture: { label:'Fourniture technicien', fields:['perid','depot'] },
+        placement:  { label:'Placement chantier',    fields:['perid','pitid','address'] },
+        reprise:    { label:'Reprise chantier',       fields:['perid','pitid','address'] },
+        retour:     { label:'Retour stock',           fields:['perid','depot'] },
+    };
 
     // ── DOM ──
     const loginSection         = document.getElementById('loginSection');
@@ -291,6 +365,8 @@
     const initialCommentsInput = document.getElementById('initialCommentsInput');
     const pitidGroup           = document.getElementById('pitidGroup');
     const addressGroup         = document.getElementById('addressGroup');
+    const depotGroup           = document.getElementById('depotGroup');
+    const depotBadgeZone       = document.getElementById('depotBadgeZone');
     const scanBtn              = document.getElementById('scanBtn');
     const stopBtn              = document.getElementById('stopBtn');
     const scanResultZone       = document.getElementById('scanResultZone');
@@ -314,21 +390,6 @@
     const sendAllBtn           = document.getElementById('sendAllBtn');
     const clearQueueBtn        = document.getElementById('clearQueueBtn');
     const testConnectionBtn    = document.getElementById('testConnectionBtn');
-
-    const operationConfig = {
-        fourniture: { label:'Fourniture technicien',  fields:['perid'] },
-        placement:  { label:'Placement chantier',     fields:['perid','pitid','address'] },
-        reprise:    { label:'Reprise chantier',        fields:['perid','pitid','address'] },
-        retour:     { label:'Retour stock',            fields:['perid'] }
-    };
-
-    // ── Codes QR spéciaux (bypass choix support/poteau) ──
-    const SPECIAL_CODES = {
-        'SIGNA-BIGFOOD 25KG':    { hasBigFoot: true,  hasMiniFoot: false, hasPoteau: false, label: '⬛ Big Foot 25KG'   },
-        'SIGNA-MINIFOOD 15KG':   { hasBigFoot: false, hasMiniFoot: true,  hasPoteau: false, label: '◾ Mini Foot 15KG'  },
-        'SIGNA-Support_Panneau': { hasBigFoot: false,  hasMiniFoot: false, hasPoteau: true, label: '🪧 Support Panneau' },
-    };
-    let specialCodeConfig = null;
 
     // ── Validation ──
     function isRepeatingDigits(v){ return /^(\d)\1+$/.test(v); }
@@ -362,8 +423,17 @@
         if(type==='success') setTimeout(()=>messageZone.innerHTML='',5000);
     }
 
+    // ── Dépôt : event listeners ──
+    document.querySelectorAll('.depot-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.depot-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedDepot = btn.dataset.depot;
+        });
+    });
+
     // ── CONNEXION ──
-    loginBtn.addEventListener('click', async ()=>{
+    loginBtn.addEventListener('click', async () => {
         const pv=loginPeridInput.value.trim(), pw=loginPasswordInput.value.trim();
         const pvr=validatePerid(pv);
         if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); loginPeridInput.focus(); return; }
@@ -415,16 +485,24 @@
     }
 
     function selectOperationType(type){
-        operationType=type; const cfg=operationConfig[type];
-        operationTypeSection.style.display='none'; sessionFormSection.style.display='block';
+        operationType=type;
+        const cfg=operationConfig[type];
+        operationTypeSection.style.display='none';
+        sessionFormSection.style.display='block';
         selectedOperationType.textContent=cfg.label;
-        pitidGroup.style.display=cfg.fields.includes('pitid')?'block':'none';
-        addressGroup.style.display=cfg.fields.includes('address')?'block':'none';
+
+        // Dépôt : visible seulement pour fourniture et retour
+        const needsDepot = cfg.fields.includes('depot');
+        depotGroup.style.display = needsDepot ? 'block' : 'none';
+        if(!needsDepot){ selectedDepot=''; document.querySelectorAll('.depot-btn').forEach(b=>b.classList.remove('selected')); }
+
+        pitidGroup.style.display   = cfg.fields.includes('pitid')   ? 'block' : 'none';
+        addressGroup.style.display = cfg.fields.includes('address') ? 'block' : 'none';
         if(cfg.fields.includes('address')){
-            addressLabel.textContent=type==='reprise'?'Adresse de récupération':'Adresse du chantier';
-            addressInput.placeholder=type==='reprise'?'Adresse où le matériel a été récupéré...':'Adresse du chantier...';
+            addressLabel.textContent  = type==='reprise'?'Adresse de récupération':'Adresse du chantier';
+            addressInput.placeholder  = type==='reprise'?'Adresse où le matériel a été récupéré...':'Adresse du chantier...';
         }
-        if(!cfg.fields.includes('pitid')) pitidInput.value='';
+        if(!cfg.fields.includes('pitid'))   pitidInput.value='';
         if(!cfg.fields.includes('address')) addressInput.value='';
     }
     changeOperationBtn.addEventListener('click',()=>{ sessionFormSection.style.display='none'; operationTypeSection.style.display='block'; operationType=''; });
@@ -433,25 +511,46 @@
         const cfg=operationConfig[operationType];
         const pv=peridInput.value.trim(); const pvr=validatePerid(pv);
         if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); peridInput.focus(); return; }
+
+        // Validation dépôt (fourniture + retour)
+        if(cfg.fields.includes('depot') && !selectedDepot){
+            showMessage('❌ Veuillez sélectionner un dépôt de stock','error');
+            depotGroup.scrollIntoView({behavior:'smooth',block:'center'});
+            return;
+        }
+
         if(cfg.fields.includes('pitid')){ const r=validatePitid(pitidInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); pitidInput.focus(); return; } }
         if(cfg.fields.includes('address')){ const r=validateAddress(addressInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); addressInput.focus(); return; } }
         saveSessionData();
-        sessionFormSection.style.display='none'; scanningSection.style.display='block';
+        sessionFormSection.style.display='none';
+        scanningSection.style.display='block';
+
+        // Afficher le badge dépôt dans la zone scan
+        if(selectedDepot){
+            const depotInfo = DEPOTS.find(d=>d.id===selectedDepot);
+            depotBadgeZone.innerHTML=`<div class="depot-badge-scan">🏭 ${depotInfo?depotInfo.name:selectedDepot} <span style="opacity:.7;font-weight:400">${selectedDepot}</span></div>`;
+        } else {
+            depotBadgeZone.innerHTML='';
+        }
+
         showMessage('✓ Configuration validée. Vous pouvez commencer à scanner.','success');
     });
 
     function saveSessionData(){
-        localStorage.setItem('perid',peridInput.value); localStorage.setItem('pitid',pitidInput.value);
-        localStorage.setItem('address',addressInput.value); localStorage.setItem('initialComments',initialCommentsInput.value);
+        localStorage.setItem('perid',peridInput.value);
+        localStorage.setItem('pitid',pitidInput.value);
+        localStorage.setItem('address',addressInput.value);
+        localStorage.setItem('initialComments',initialCommentsInput.value);
         localStorage.setItem('operationType',operationType);
+        localStorage.setItem('selectedDepot',selectedDepot);
     }
     peridInput.addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').substring(0,6); });
     pitidInput.addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').substring(0,7); });
 
     function loadConfig(){
-        pitidInput.value=localStorage.getItem('pitid')||'';
-        addressInput.value=localStorage.getItem('address')||'';
-        initialCommentsInput.value=localStorage.getItem('initialComments')||'';
+        pitidInput.value          = localStorage.getItem('pitid')||'';
+        addressInput.value        = localStorage.getItem('address')||'';
+        initialCommentsInput.value= localStorage.getItem('initialComments')||'';
         const sq=localStorage.getItem('itemQueue');
         if(sq){ try{ itemQueue=JSON.parse(sq); updateQueueDisplay(); }catch(e){} }
         loginSection.style.display='block';
@@ -477,25 +576,21 @@
 
     async function onScanSuccess(decodedText){
         if(scannedBarcode===decodedText) return;
-        scannedBarcode=decodedText;
-        selectedSupport=''; selectedPoteau=''; specialCodeConfig=null;
+        scannedBarcode=decodedText; selectedSupport=''; selectedPoteau=''; specialCodeConfig=null;
         if(navigator.vibrate) navigator.vibrate(200);
-        // reset boutons
         [bigFootBtn,miniFootBtn,noSupportBtn].forEach(b=>b.classList.remove('selected'));
         [poteauOuiBtn,poteauNonBtn].forEach(b=>b.classList.remove('selected-yes','selected-no'));
         confirmChoicesBtn.style.display='none';
-
         barcodeInput.value=decodedText; quantityInput.value='1'; notesInput.value='';
 
-        // ── Détection code spécial ──
         if(SPECIAL_CODES[decodedText]){
-            specialCodeConfig = SPECIAL_CODES[decodedText];
-            const badgeColor = specialCodeConfig.hasBigFoot ? '#F97316' : specialCodeConfig.hasMiniFoot ? '#F59E0B' : '#94A3B8';
+            specialCodeConfig=SPECIAL_CODES[decodedText];
+            const bc=specialCodeConfig.hasBigFoot?'#F97316':specialCodeConfig.hasMiniFoot?'#F59E0B':'#94A3B8';
             scanResultZone.innerHTML=`
                 <div class="scan-result">
                     <div class="scan-result-label">Code spécial détecté</div>
                     <div class="scan-result-value">${decodedText}</div>
-                    <div style="margin-top:10px;padding:8px 12px;background:${badgeColor}22;border:1px solid ${badgeColor};border-radius:8px;font-size:.85rem;color:${badgeColor};font-weight:600;">
+                    <div style="margin-top:10px;padding:8px 12px;background:${bc}22;border:1px solid ${bc};border-radius:8px;font-size:.85rem;color:${bc};font-weight:600;">
                         ${specialCodeConfig.label} — Composants définis automatiquement
                     </div>
                     <div style="margin-top:8px;font-size:.78rem;color:var(--text-secondary);">
@@ -504,91 +599,45 @@
                         Poteau: <strong>${specialCodeConfig.hasPoteau?'✅':'❌'}</strong>
                     </div>
                 </div>`;
-            // Bypass des choix → afficher directement les notes
-            supportChoiceSection.style.display='none';
-            formSection.style.display='block';
-            showMessage(`✓ ${specialCodeConfig.label} — valeurs automatiques. Ajoutez des notes si nécessaire.`,'success');
+            supportChoiceSection.style.display='none'; formSection.style.display='block';
+            showMessage(`✓ ${specialCodeConfig.label} — valeurs auto. Ajoutez des notes si nécessaire.`,'success');
         } else {
-            // Code normal : afficher les choix support + poteau
             scanResultZone.innerHTML=`<div class="scan-result"><div class="scan-result-label">Code scanné</div><div class="scan-result-value">${decodedText}</div></div>`;
             supportChoiceSection.style.display='block'; formSection.style.display='none';
             showMessage('✓ Code scanné ! Choisissez le support et le poteau.','success');
         }
     }
 
-    // ── Vérifier si les 2 choix sont faits ──
     function checkChoicesReady(){
-        if(selectedSupport && selectedPoteau) confirmChoicesBtn.style.display='block';
-        else confirmChoicesBtn.style.display='none';
+        confirmChoicesBtn.style.display=(selectedSupport&&selectedPoteau)?'block':'none';
     }
 
-    // ── Support ──
-    bigFootBtn.addEventListener('click',()=>{
-        selectedSupport='Big Foot';
-        bigFootBtn.classList.add('selected'); miniFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected');
-        checkChoicesReady();
-    });
-    miniFootBtn.addEventListener('click',()=>{
-        selectedSupport='Mini Foot';
-        miniFootBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected');
-        checkChoicesReady();
-    });
-    noSupportBtn.addEventListener('click',()=>{
-        selectedSupport='Rien';
-        noSupportBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); miniFootBtn.classList.remove('selected');
-        checkChoicesReady();
-    });
-
-    // ── Poteau ──
-    poteauOuiBtn.addEventListener('click',()=>{
-        selectedPoteau='oui';
-        poteauOuiBtn.classList.add('selected-yes'); poteauNonBtn.classList.remove('selected-yes','selected-no');
-        checkChoicesReady();
-    });
-    poteauNonBtn.addEventListener('click',()=>{
-        selectedPoteau='non';
-        poteauNonBtn.classList.add('selected-no'); poteauOuiBtn.classList.remove('selected-yes','selected-no');
-        checkChoicesReady();
-    });
-
-    // ── Confirmer les choix ──
+    bigFootBtn.addEventListener('click',()=>{ selectedSupport='Big Foot'; bigFootBtn.classList.add('selected'); miniFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected'); checkChoicesReady(); });
+    miniFootBtn.addEventListener('click',()=>{ selectedSupport='Mini Foot'; miniFootBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); noSupportBtn.classList.remove('selected'); checkChoicesReady(); });
+    noSupportBtn.addEventListener('click',()=>{ selectedSupport='Rien'; noSupportBtn.classList.add('selected'); bigFootBtn.classList.remove('selected'); miniFootBtn.classList.remove('selected'); checkChoicesReady(); });
+    poteauOuiBtn.addEventListener('click',()=>{ selectedPoteau='oui'; poteauOuiBtn.classList.add('selected-yes'); poteauNonBtn.classList.remove('selected-yes','selected-no'); checkChoicesReady(); });
+    poteauNonBtn.addEventListener('click',()=>{ selectedPoteau='non'; poteauNonBtn.classList.add('selected-no'); poteauOuiBtn.classList.remove('selected-yes','selected-no'); checkChoicesReady(); });
     confirmChoicesBtn.addEventListener('click',()=>{
         supportChoiceSection.style.display='none'; formSection.style.display='block';
-        const supportTxt = selectedSupport==='Rien' ? 'Aucun support' : selectedSupport;
-        const poteauTxt  = selectedPoteau==='oui' ? 'Avec poteau' : 'Sans poteau';
-        showMessage(`✓ ${supportTxt} · ${poteauTxt}. Ajoutez des notes si nécessaire.`,'success');
+        const st=selectedSupport==='Rien'?'Aucun support':selectedSupport;
+        showMessage(`✓ ${st} · ${selectedPoteau==='oui'?'Avec poteau':'Sans poteau'}. Notes si nécessaire.`,'success');
     });
 
     // ── Ajouter à la queue ──
     addToQueueBtn.addEventListener('click',()=>{
         if(!barcodeInput.value){ showMessage('Aucun code-barres détecté','error'); return; }
-
         const timestamp=new Date().toISOString(), barcode=barcodeInput.value;
         const baseId=Date.now(), notes=notesInput.value||'';
 
         if(specialCodeConfig){
-            // ── CAS SPÉCIAL : 1 seul item, booléens automatiques ──
-            itemQueue.push({
-                id:baseId, type:'special', barcode, quantity:1, notes, timestamp,
-                hasBigFoot:  specialCodeConfig.hasBigFoot,
-                hasMiniFoot: specialCodeConfig.hasMiniFoot,
-                hasPoteau:   specialCodeConfig.hasPoteau,
-                specialLabel: specialCodeConfig.label
-            });
+            itemQueue.push({id:baseId,type:'special',barcode,quantity:1,notes,timestamp,
+                hasBigFoot:specialCodeConfig.hasBigFoot, hasMiniFoot:specialCodeConfig.hasMiniFoot,
+                hasPoteau:specialCodeConfig.hasPoteau, specialLabel:specialCodeConfig.label});
         } else {
-            // ── CAS NORMAL : panneau + composants ──
             if(!selectedSupport||!selectedPoteau){ showMessage('❌ Veuillez faire les deux choix','error'); return; }
-
-            // ① Panneau (toujours)
-            itemQueue.push({id:baseId, type:'panel', barcode, quantity:1, notes, timestamp});
-
-            // ② Poteau (si Oui)
-            if(selectedPoteau==='oui')
-                itemQueue.push({id:baseId+1, type:'component', barcode:'Poteau aluminium', quantity:1, notes, timestamp, parentBarcode:barcode});
-
-            // ③ Support (si pas Rien)
-            if(selectedSupport!=='Rien')
-                itemQueue.push({id:baseId+2, type:'component', barcode:selectedSupport, quantity:1, notes, timestamp, parentBarcode:barcode});
+            itemQueue.push({id:baseId,type:'panel',barcode,quantity:1,notes,timestamp});
+            if(selectedPoteau==='oui') itemQueue.push({id:baseId+1,type:'component',barcode:'Poteau aluminium',quantity:1,notes,timestamp,parentBarcode:barcode});
+            if(selectedSupport!=='Rien') itemQueue.push({id:baseId+2,type:'component',barcode:selectedSupport,quantity:1,notes,timestamp,parentBarcode:barcode});
         }
 
         saveQueue(); updateQueueDisplay();
@@ -612,9 +661,10 @@
         itemQueue=[]; saveQueue(); updateQueueDisplay();
         pitidInput.value=''; addressInput.value=''; initialCommentsInput.value='';
         barcodeInput.value=''; quantityInput.value='1'; notesInput.value='';
-        operationType=''; scannedBarcode=''; selectedSupport=''; selectedPoteau='';
-        localStorage.removeItem('operationType'); localStorage.removeItem('pitid');
-        localStorage.removeItem('address'); localStorage.removeItem('initialComments'); localStorage.removeItem('itemQueue');
+        operationType=''; scannedBarcode=''; selectedSupport=''; selectedPoteau=''; selectedDepot='';
+        document.querySelectorAll('.depot-btn').forEach(b=>b.classList.remove('selected'));
+        depotBadgeZone.innerHTML='';
+        ['operationType','pitid','address','initialComments','itemQueue','selectedDepot'].forEach(k=>localStorage.removeItem(k));
         sessionFormSection.style.display='none'; scanningSection.style.display='none';
         formSection.style.display='none'; supportChoiceSection.style.display='none'; scanResultZone.innerHTML='';
         operationTypeSection.style.display='block'; loginSection.style.display='none';
@@ -624,24 +674,23 @@
     // ── Queue ──
     function saveQueue(){ localStorage.setItem('itemQueue',JSON.stringify(itemQueue)); }
     function updateQueueDisplay(){
-        const pc=itemQueue.filter(i=>i.type==='panel').length;
+        const pc=itemQueue.filter(i=>i.type==='panel'||i.type==='special').length;
         queueCount.textContent=pc;
         if(!itemQueue.length){ queueSection.style.display='none'; queueList.innerHTML='<div class="queue-empty">Aucun article dans la liste</div>'; return; }
         queueSection.style.display='block';
         queueList.innerHTML=itemQueue.map(item=>{
-            const isCpt=item.type==='component';
-            const isSpc=item.type==='special';
-            const icon = isCpt ? '└─ ' : isSpc ? '⚡ ' : '📦 ';
-            const badgeSpc = isSpc ? `<span style="font-size:.72rem;background:var(--warning);color:var(--bg-primary);padding:2px 7px;border-radius:20px;margin-left:6px;font-weight:700;">Auto</span>` : '';
-            return `<div class="queue-item ${isCpt?'component':isSpc?'component':''}">
+            const isCpt=item.type==='component', isSpc=item.type==='special';
+            const icon=isCpt?'└─ ':isSpc?'⚡ ':'📦 ';
+            const badge=isSpc?`<span style="font-size:.72rem;background:var(--warning);color:var(--bg-primary);padding:2px 7px;border-radius:20px;margin-left:6px;font-weight:700;">Auto</span>`:'';
+            return `<div class="queue-item ${isCpt||isSpc?'component':''}">
                 <div class="queue-item-header">
-                    <div class="queue-item-barcode">${icon}${item.barcode}${badgeSpc}</div>
+                    <div class="queue-item-barcode">${icon}${item.barcode}${badge}</div>
                     ${!isCpt?`<button class="queue-item-remove" onclick="removeFromQueue(${item.id})">×</button>`:''}
                 </div>
                 <div class="queue-item-details">
                     <div class="queue-item-detail"><div class="queue-item-label">Qté</div><div class="queue-item-value">${item.quantity}</div></div>
                     <div class="queue-item-detail"><div class="queue-item-label">${isCpt?'Type':isSpc?'Type':'Heure'}</div><div class="queue-item-value">${isCpt?'Composant':isSpc?(item.specialLabel||'Spécial'):new Date(item.timestamp).toLocaleTimeString('fr-FR')}</div></div>
-                    ${isSpc?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Booléens auto</div><div class="queue-item-value" style="font-size:.8rem">BigFoot:${item.hasBigFoot?'✅':'❌'} · MiniFoot:${item.hasMiniFoot?'✅':'❌'} · Poteau:${item.hasPoteau?'✅':'❌'}</div></div>`:''}
+                    ${isSpc?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Booléens</div><div class="queue-item-value" style="font-size:.8rem">BF:${item.hasBigFoot?'✅':'❌'} MF:${item.hasMiniFoot?'✅':'❌'} PT:${item.hasPoteau?'✅':'❌'}</div></div>`:''}
                     ${item.notes?`<div class="queue-item-detail" style="grid-column:1/-1"><div class="queue-item-label">Notes</div><div class="queue-item-value">${item.notes}</div></div>`:''}
                 </div>
             </div>`;
@@ -654,8 +703,8 @@
         saveQueue(); updateQueueDisplay(); showMessage('Supprimé','success');
     };
     clearQueueBtn.addEventListener('click',()=>{
-        const pc=itemQueue.filter(i=>i.type==='panel').length;
-        if(confirm(`Supprimer ${pc} panneau(x) et leurs composants ?`)){ itemQueue=[]; saveQueue(); updateQueueDisplay(); showMessage('Liste vidée','success'); }
+        const pc=itemQueue.filter(i=>i.type==='panel'||i.type==='special').length;
+        if(confirm(`Supprimer ${pc} article(s) et leurs composants ?`)){ itemQueue=[]; saveQueue(); updateQueueDisplay(); showMessage('Liste vidée','success'); }
     });
 
     // ── Envoi ──
@@ -663,6 +712,7 @@
         const pv=peridInput.value.trim(), pvr=validatePerid(pv);
         if(!pvr.valid){ showMessage(`❌ ${pvr.message}`,'error'); return; }
         const cfg=operationConfig[operationType];
+        if(cfg.fields.includes('depot')&&!selectedDepot){ showMessage('❌ Dépôt de stock non sélectionné','error'); return; }
         if(cfg.fields.includes('pitid')){ const r=validatePitid(pitidInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
         if(cfg.fields.includes('address')){ const r=validateAddress(addressInput.value.trim()); if(!r.valid){ showMessage(`❌ ${r.message}`,'error'); return; } }
         if(!itemQueue.length){ showMessage('❌ Aucun article à envoyer','error'); return; }
@@ -678,25 +728,28 @@
                 const item=itemQueue[i];
                 sendAllBtn.innerHTML=`<span class="spinner"></span>Envoi ${i+1}/${itemQueue.length}...`;
 
-                // Booléens : code spécial = auto, code normal = calculé depuis le groupe
-                let hBF, hMF, hPT;
-                if(item.type==='special'){
-                    hBF=item.hasBigFoot; hMF=item.hasMiniFoot; hPT=item.hasPoteau;
-                } else {
-                    const parentCode=item.type==='panel'?item.barcode:item.parentBarcode;
-                    const group=itemQueue.filter(x=>x.barcode===parentCode||x.parentBarcode===parentCode);
-                    hBF = group.some(x=>x.barcode==='Big Foot');
-                    hMF = group.some(x=>x.barcode==='Mini Foot');
-                    hPT = group.some(x=>x.barcode==='Poteau aluminium');
+                let hBF,hMF,hPT;
+                if(item.type==='special'){ hBF=item.hasBigFoot; hMF=item.hasMiniFoot; hPT=item.hasPoteau; }
+                else {
+                    const pc=item.type==='panel'?item.barcode:item.parentBarcode;
+                    const grp=itemQueue.filter(x=>x.barcode===pc||x.parentBarcode===pc);
+                    hBF=grp.some(x=>x.barcode==='Big Foot');
+                    hMF=grp.some(x=>x.barcode==='Mini Foot');
+                    hPT=grp.some(x=>x.barcode==='Poteau aluminium');
                 }
 
                 const payload={
                     operationType, operationLabel:cfg.label,
-                    perid:pv, pitid:pitidInput.value.trim()||'', address:addressInput.value.trim()||'', initialComments:initialCommentsInput.value.trim()||'',
+                    perid:pv,
+                    depot: selectedDepot || "",            // ← NOUVEAU
+                    pitid:pitidInput.value.trim()||'',
+                    address:addressInput.value.trim()||'',
+                    initialComments:initialCommentsInput.value.trim()||'',
                     items:[{barcode:item.barcode,quantity:parseInt(item.quantity),notes:item.notes||'',timestamp:item.timestamp,type:item.type||'panel',parentBarcode:item.parentBarcode||''}],
                     hasBigFoot:hBF, hasMiniFoot:hMF, hasPoteau:hPT,
-                    isSpecialCode: item.type==='special',
-                    totalItems:1, batchTimestamp:new Date().toISOString(), scannedBy:scannedByValue, itemIndex:i+1, totalBatchItems:itemQueue.length
+                    isSpecialCode:item.type==='special',
+                    totalItems:1, batchTimestamp:new Date().toISOString(),
+                    scannedBy:scannedByValue, itemIndex:i+1, totalBatchItems:itemQueue.length
                 };
                 try {
                     const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -714,8 +767,8 @@
     testConnectionBtn.addEventListener('click', async ()=>{
         testConnectionBtn.disabled=true; testConnectionBtn.innerHTML='<span class="spinner"></span>Test...';
         try {
-            const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operationType:'test',operationLabel:'Test',perid:'TEST',pitid:'',address:'',initialComments:'Test',items:[{barcode:'TEST',quantity:1,notes:'',timestamp:new Date().toISOString()}],hasBigFoot:false,hasMiniFoot:false,hasPoteau:false,totalItems:1,batchTimestamp:new Date().toISOString(),scannedBy:'Test',itemIndex:1,totalBatchItems:1})});
-            showMessage(res.ok?'✅ Connexion OK':'`❌ Test échoué ('+res.status+')`',res.ok?'success':'error');
+            const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operationType:'test',operationLabel:'Test',perid:'TEST',depot:'',pitid:'',address:'',initialComments:'Test',items:[{barcode:'TEST',quantity:1,notes:'',timestamp:new Date().toISOString(),type:'panel',parentBarcode:''}],hasBigFoot:false,hasMiniFoot:false,hasPoteau:false,isSpecialCode:false,totalItems:1,batchTimestamp:new Date().toISOString(),scannedBy:'Test',itemIndex:1,totalBatchItems:1})});
+            showMessage(res.ok?'✅ Connexion OK':`❌ Test échoué (${res.status})`,res.ok?'success':'error');
         } catch(e){ showMessage(`❌ Erreur réseau : ${e.message}`,'error'); }
         testConnectionBtn.disabled=false; testConnectionBtn.innerHTML='🔌 Tester la connexion Power Automate';
     });
